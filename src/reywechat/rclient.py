@@ -130,7 +130,7 @@ class WeChatClient(WeChatBase):
         print(f'Start WeChat client API successfully, address is "127.0.0.1:{self.client_port}".')
 
 
-    def popup_select_wechat_dir(self, default: str = 'C:/Program Files/Tencent/Weixin') -> str:
+    def popup_select_wechat_dir(self, default: str = 'C:/Program Files (x86)/Tencent/WeChat') -> str:
         """
         Pop up WeChat installation directory select box.
 
@@ -140,7 +140,7 @@ class WeChatClient(WeChatBase):
         """
 
         # Parameter.
-        client_file_name = 'Weixin.exe'
+        client_file_name = 'WeChat.exe'
 
         # Default.
         folder = Folder(default)
@@ -161,7 +161,7 @@ class WeChatClient(WeChatBase):
         if wechat_dir is None:
             raise WeChatClientErorr('WeChat installation directory not selected')
         folder = Folder(wechat_dir)
-        client_file_name = 'Weixin.exe'
+        client_file_name = 'WeChat.exe'
         if client_file_name not in folder:
             raise WeChatClientErorr(f'WeChat installation directory has no client "{client_file_name}"')
 
@@ -178,21 +178,23 @@ class WeChatClient(WeChatBase):
         """
 
         # Create.
-        self_file = File(__file__)
-        self_dir = Folder(self_file.dir)
-        data_dir = self_dir + 'data'
 
         ## DLL.
-        dll_version_path = data_dir + '/version.dll'
-        dll_version_file = File(dll_version_path)
-        dll_version_copy_path = wechat_dir + '/version.dll'
-        if not File(dll_version_copy_path):
-            File(dll_version_file).copy(dll_version_copy_path)
+        dll_names = (
+            'version.dll',
+            'HPSocket4C.dll'
+        )
+        package_dir = os_dirname(__file__)
+        for name in dll_names:
+            dll_orig_path = f'{package_dir}/data/{name}'
+            dll_copy_path = f'{wechat_dir}/{name}'
+            if not File(dll_copy_path):
+                File(dll_orig_path).copy(dll_copy_path)
 
         ## Config.
-        dll_hook_path = self_dir + '/DaenWxHook4.1.2.17.dll'
+        config_path = f'{wechat_dir}/config.json'
+        config_file = File(config_path)
         config = {
-            'dllPath': dll_hook_path,
             'callBackUrl': f'http://127.0.0.1:{self.callback_port}/callback',
             'port': self.client_port,
             'timeOut': '3600000',
@@ -202,8 +204,6 @@ class WeChatClient(WeChatBase):
             'hookSilk': '1',
             'httpMode': '1'
         }
-        config_path = f'{wechat_dir}/config.json'
-        config_file = File(config_path)
         config_file(config)
 
 
@@ -213,7 +213,7 @@ class WeChatClient(WeChatBase):
         """
 
         # Start.
-        wechat_path = f'{wechat_dir}/Weixin.exe'
+        wechat_path = f'{wechat_dir}/WeChat.exe'
         run_cmd(wechat_path, True)
 
 
@@ -231,7 +231,7 @@ class WeChatClient(WeChatBase):
         process = processes[0]
         with process.oneshot():
             process_name = process.name()
-        if process_name != 'DaenWxHook4.1.2.17.exe':
+        if process_name != 'WeChat.exe':
             return False
 
         return True
@@ -570,7 +570,7 @@ class WeChatClient(WeChatBase):
         receive_id: str,
         text: str,
         at_id: str | list[str] | Literal['all'] | None = None
-    ) -> list[str] | None:
+    ) -> list[str]:
         """
         Send text message.
 
@@ -618,11 +618,10 @@ class WeChatClient(WeChatBase):
         result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
+        hook_id: str = result['sendId']
+        hook_ids = hook_id.split(',')
 
-        return hook_id
+        return hook_ids
 
 
     def send_text_quote(
@@ -631,7 +630,7 @@ class WeChatClient(WeChatBase):
         text: str,
         message_id: str,
         at_id: str | list[str] | Literal['all'] | None = None
-    ) -> list[str] | None:
+    ) -> list[str]:
         """
         Send text message with quote.
 
@@ -681,18 +680,17 @@ class WeChatClient(WeChatBase):
         result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
+        hook_id: str = result['sendId']
+        hook_ids = hook_id.split(',')
 
-        return hook_id
+        return hook_ids
 
 
     def send_file(
         self,
         receive_id: str,
         file_path: str
-    ) -> list[str] | None:
+    ) -> list[str]:
         """
         Send file message.
 
@@ -717,18 +715,17 @@ class WeChatClient(WeChatBase):
         result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
+        hook_id: str = result['sendId']
+        hook_ids = hook_id.split(',')
 
-        return hook_id
+        return hook_ids
 
 
     def send_image(
         self,
         receive_id: str,
         file_path: str
-    ) -> list[str] | None:
+    ) -> list[str]:
         """
         Send image message.
 
@@ -753,18 +750,17 @@ class WeChatClient(WeChatBase):
         result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
+        hook_id: str = result['sendId']
+        hook_ids = hook_id.split(',')
 
-        return hook_id
+        return hook_ids
 
 
     def send_emotion(
         self,
         receive_id: str,
         file_path: str
-    ) -> list[str] | None:
+    ) -> None:
         """
         Send emotion message.
 
@@ -782,14 +778,7 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        result: dict = self.request(api, data)
-
-        # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
-
-        return hook_id
+        self.request(api, data)
 
 
     def send_share(
@@ -799,7 +788,7 @@ class WeChatClient(WeChatBase):
         title: str,
         text: str,
         image_url: str | None = None
-    ) -> list[str] | None:
+    ) -> list[str]:
         """
         Send share link message.
 
@@ -832,11 +821,10 @@ class WeChatClient(WeChatBase):
         result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
+        hook_id: str = result['sendId']
+        hook_ids = hook_id.split(',')
 
-        return hook_id
+        return hook_ids
 
 
     def send_log(
@@ -844,7 +832,7 @@ class WeChatClient(WeChatBase):
         receive_id: str,
         chats: list[SendLogChat],
         title: str = '聊天记录'
-    ) -> list[str] | None:
+    ) -> list[str]:
         """
         Send chat log.
 
@@ -884,8 +872,7 @@ class WeChatClient(WeChatBase):
         result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str | None = result.get('sendId')
-        if type(hook_id) == str:
-            hook_id = hook_id.split(',')
+        hook_id: str = result['sendId']
+        hook_ids = hook_id.split(',')
 
-        return hook_id
+        return hook_ids

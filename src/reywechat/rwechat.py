@@ -26,7 +26,7 @@ class WeChat(WeChatBase):
     """
     WeChat type.
 
-    Warnings, only applicable to WeChat clients with version `4.1.2.17`.
+    Warnings, only applicable to WeChat clients with version `3.9.12.56`.
 
     Warnings, must enabled file automatic download.
     """
