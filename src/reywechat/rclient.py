@@ -231,7 +231,7 @@ class WeChatClient(WeChatBase):
         process = processes[0]
         with process.oneshot():
             process_name = process.name()
-        if process_name != 'Weixin.exe':
+        if process_name != 'DaenWxHook4.1.2.17.exe':
             return False
 
         return True
@@ -570,7 +570,7 @@ class WeChatClient(WeChatBase):
         receive_id: str,
         text: str,
         at_id: str | list[str] | Literal['all'] | None = None
-    ) -> list[str]:
+    ) -> list[str] | None:
         """
         Send text message.
 
@@ -615,13 +615,14 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        result = self.request(api, data)
+        result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str = result['sendId']
-        hook_ids = hook_id.split(',')
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
 
-        return hook_ids
+        return hook_id
 
 
     def send_text_quote(
@@ -630,7 +631,7 @@ class WeChatClient(WeChatBase):
         text: str,
         message_id: str,
         at_id: str | list[str] | Literal['all'] | None = None
-    ) -> list[str]:
+    ) -> list[str] | None:
         """
         Send text message with quote.
 
@@ -677,20 +678,21 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        result = self.request(api, data)
+        result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str = result['sendId']
-        hook_ids = hook_id.split(',')
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
 
-        return hook_ids
+        return hook_id
 
 
     def send_file(
         self,
         receive_id: str,
         file_path: str
-    ) -> list[str]:
+    ) -> list[str] | None:
         """
         Send file message.
 
@@ -712,20 +714,21 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        result = self.request(api, data)
+        result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str = result['sendId']
-        hook_ids = hook_id.split(',')
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
 
-        return hook_ids
+        return hook_id
 
 
     def send_image(
         self,
         receive_id: str,
         file_path: str
-    ) -> list[str]:
+    ) -> list[str] | None:
         """
         Send image message.
 
@@ -747,20 +750,21 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        result = self.request(api, data)
+        result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str = result['sendId']
-        hook_ids = hook_id.split(',')
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
 
-        return hook_ids
+        return hook_id
 
 
     def send_emotion(
         self,
         receive_id: str,
         file_path: str
-    ) -> None:
+    ) -> list[str] | None:
         """
         Send emotion message.
 
@@ -778,7 +782,14 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        self.request(api, data)
+        result: dict = self.request(api, data)
+
+        # Extract.
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
+
+        return hook_id
 
 
     def send_share(
@@ -788,7 +799,7 @@ class WeChatClient(WeChatBase):
         title: str,
         text: str,
         image_url: str | None = None
-    ) -> list[str]:
+    ) -> list[str] | None:
         """
         Send share link message.
 
@@ -818,13 +829,14 @@ class WeChatClient(WeChatBase):
             data['path'] = image_url
 
         # Request.
-        result = self.request(api, data)
+        result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str = result['sendId']
-        hook_ids = hook_id.split(',')
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
 
-        return hook_ids
+        return hook_id
 
 
     def send_log(
@@ -832,7 +844,7 @@ class WeChatClient(WeChatBase):
         receive_id: str,
         chats: list[SendLogChat],
         title: str = '聊天记录'
-    ) -> list[str]:
+    ) -> list[str] | None:
         """
         Send chat log.
 
@@ -869,10 +881,11 @@ class WeChatClient(WeChatBase):
         }
 
         # Request.
-        result = self.request(api, data)
+        result: dict = self.request(api, data)
 
         # Extract.
-        hook_id: str = result['sendId']
-        hook_ids = hook_id.split(',')
+        hook_id: str | None = result.get('sendId')
+        if type(hook_id) == str:
+            hook_id = hook_id.split(',')
 
-        return hook_ids
+        return hook_id

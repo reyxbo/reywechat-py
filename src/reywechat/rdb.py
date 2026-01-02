@@ -906,10 +906,11 @@ class WeChatDatabase(WeChatBase):
                 status = WeChatDatabaseSendStatusEnum.SUCCESS
             else:
                 status = WeChatDatabaseSendStatusEnum.FAIL
+            hook_id = send_params.hook_id and tuple(send_params.hook_id)
             data = {
                 'send_id': send_params.send_id,
                 'update_time': ':NOW()',
-                'hook_id': tuple(send_params.hook_id),
+                'hook_id': hook_id,
                 'status': status
             }
 

@@ -1,6 +1,6 @@
 [project]
 name = "reywechat"
-version = "1.0.114"
+version = "1.0.115"
 description = "WeChat client control method set."
 readme = "README.md"
 requires-python = ">=3.12"
