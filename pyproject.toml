@@ -17,7 +17,8 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/reyxbo/reywechat/"
+Homepage = "https://www.reyxbo.com"
+Repository = "https://github.com/reyxbo/reywechat-py.git"
 
 [build-system]
 requires = ["hatchling"]
