@@ -8,7 +8,6 @@
 @Explain : Trigger methods.
 """
 
-
 from typing import Any, TypedDict, NoReturn
 from collections.abc import Callable
 from reykit.rbase import catch_exc
@@ -16,20 +15,16 @@ from reykit.rbase import catch_exc
 from .rbase import WeChatBase, WeChatTriggerContinueExit, WeChatTriggerBreakExit
 from .rreceive import WeChatMessage, WechatReceiver
 
-
 __all__ = (
     'WeChatTrigger',
 )
 
-
 TriggerRule = TypedDict('TriggerRule', {'level': float, 'execute': Callable[[WeChatMessage], None], 'is_reply': bool})
-
 
 class WeChatTrigger(WeChatBase):
     """
     WeChat trigger type.
     """
-
 
     def __init__(
         self,
@@ -53,7 +48,6 @@ class WeChatTrigger(WeChatBase):
         # Add trigger.
         self.__add_trigger_valid()
 
-
     def __add_receiver_handler_trigger_by_rule(self) -> Callable[[WeChatMessage], None]:
         """
         Add receiver handler, trigger message by rules.
@@ -62,7 +56,6 @@ class WeChatTrigger(WeChatBase):
         -------
         Handler.
         """
-
 
         def receiver_handler_trigger_by_rule(message: WeChatMessage) -> None:
             """
@@ -108,12 +101,10 @@ class WeChatTrigger(WeChatBase):
                 finally:
                     message.triggering_rule = None
 
-
         # Add handler.
         self.receiver.add_handler(receiver_handler_trigger_by_rule)
 
         return receiver_handler_trigger_by_rule
-
 
     def add_rule(
         self,
@@ -151,7 +142,6 @@ class WeChatTrigger(WeChatBase):
             reverse=True
         )
 
-
     def continue_(self) -> NoReturn:
         """
         Continue trigger by throwing `WeChatTriggerContinueExit` type exception.
@@ -159,7 +149,6 @@ class WeChatTrigger(WeChatBase):
 
         # Raise.
         raise WeChatTriggerContinueExit
-
 
     def break_(self) -> NoReturn:
         """
@@ -169,7 +158,6 @@ class WeChatTrigger(WeChatBase):
         # Raise.
         raise WeChatTriggerBreakExit
 
-
     def __add_trigger_valid(self) -> None:
         """
         Add trigger, trigger rule judge valid.
@@ -178,7 +166,6 @@ class WeChatTrigger(WeChatBase):
         -------
         Handler.
         """
-
 
         def trigger_valid(message: WeChatMessage) -> None:
             """
@@ -194,7 +181,6 @@ class WeChatTrigger(WeChatBase):
 
                 # Break.
                 message.trigger_break()
-
 
         # Add.
         self.add_rule(trigger_valid, float('inf'), False)

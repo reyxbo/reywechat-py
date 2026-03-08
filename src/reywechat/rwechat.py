@@ -8,7 +8,6 @@
 @Explain : WeChat methods.
 """
 
-
 from os import getcwd as os_getcwd
 from reydb import Database
 from reykit.rbase import block
@@ -16,11 +15,9 @@ from reyserver.rclient import ServerClient
 
 from .rbase import WeChatBase
 
-
 __all__ = (
     'WeChat',
 )
-
 
 class WeChat(WeChatBase):
     """
@@ -30,7 +27,6 @@ class WeChat(WeChatBase):
 
     Warnings, must enabled file automatic download.
     """
-
 
     def __init__(
         self,
@@ -98,7 +94,6 @@ class WeChat(WeChatBase):
         ## Database.
         self.database_build = self.db.build_db
 
-
     def start(self) -> None:
         """
         Start all methods.
@@ -107,7 +102,6 @@ class WeChat(WeChatBase):
         # Start.
         self.receive_start()
         self.send_start()
-
 
     def keep(self) -> None:
         """
@@ -119,7 +113,6 @@ class WeChat(WeChatBase):
 
         # Blocking.
         block()
-
 
     @property
     def print_colour(self) -> bool:
@@ -135,7 +128,6 @@ class WeChat(WeChatBase):
         result = self.error.rrlog.print_colour
 
         return result
-
 
     @print_colour.setter
     def print_colour(self, value: bool) -> None:

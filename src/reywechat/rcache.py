@@ -8,23 +8,19 @@
 @Explain : Cache methods.
 """
 
-
 from reykit.ros import FileStore, join_path
 
 from .rbase import WeChatBase
 from .rwechat import WeChat
 
-
 __all__ = (
     'WeChatCache',
 )
-
 
 class WeChatCache(WeChatBase, FileStore):
     """
     WeChat file cache type.
     """
-
 
     def __init__(
         self,

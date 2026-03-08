@@ -8,7 +8,6 @@
 @Explain : Send methods.
 """
 
-
 from typing import Any, Literal, overload
 from collections.abc import Callable
 from enum import StrEnum
@@ -22,13 +21,11 @@ from .rbase import WeChatBase, WeChatTriggerContinueExit, WeChatTriggerBreakExit
 from .rclient import SendLogChat
 from .rwechat import WeChat
 
-
 __all__ = (
     'WeChatSendTypeEnum',
     'WeChatSendParameters',
     'WeChatSender'
 )
-
 
 class WeChatSendTypeEnum(WeChatBase, StrEnum):
     """
@@ -50,7 +47,6 @@ class WeChatSendTypeEnum(WeChatBase, StrEnum):
     LOG = 'log'
     'Send chat log message.'
 
-
 class WeChatSenderStatusEnum(WeChatBase, StrEnum):
     """
     WeChat sender status enumeration type.
@@ -63,7 +59,6 @@ class WeChatSenderStatusEnum(WeChatBase, StrEnum):
     SENT = 'sent'
     'After sending.'
 
-
 class WeChatSendParameters(WeChatBase):
     """
     WeChat send parameters type.
@@ -71,7 +66,6 @@ class WeChatSendParameters(WeChatBase):
 
     SendTypeEnum = WeChatSendTypeEnum
     SendStatusEnum = WeChatSenderStatusEnum
-
 
     @overload
     def __init__(
@@ -181,7 +175,6 @@ class WeChatSendParameters(WeChatBase):
         ## Cache.
         self._text: str | None = None
 
-
     @property
     def text(self) -> str:
         """
@@ -222,7 +215,6 @@ class WeChatSendParameters(WeChatBase):
 
         return self._text
 
-
 class WeChatSender(WeChatBase):
     """
     WeChat sender type.
@@ -234,7 +226,6 @@ class WeChatSender(WeChatBase):
 
     SendTypeEnum = WeChatSendTypeEnum
     SendStatusEnum = WeChatSenderStatusEnum
-
 
     def __init__(self, wechat: WeChat) -> None:
         """
@@ -254,13 +245,11 @@ class WeChatSender(WeChatBase):
         # Start.
         self.__start_sender()
 
-
     @wrap_thread
     def __start_sender(self) -> None:
         """
         Start sender, that will sequentially send message in the send queue.
         """
-
 
         # Loop.
         while True:
@@ -306,7 +295,6 @@ class WeChatSender(WeChatBase):
 
             ## Log.
             self.wechat.error.log_send(send_params)
-
 
     def __send(
         self,
@@ -372,7 +360,6 @@ class WeChatSender(WeChatBase):
         )
 
         return hook_id
-
 
     @overload
     def send(
@@ -470,7 +457,6 @@ class WeChatSender(WeChatBase):
         # Insert.
         self.wechat.db._insert_send(send_params)
 
-
     def add_handler(
         self,
         handler: Callable[[WeChatSendParameters], Any]
@@ -489,7 +475,6 @@ class WeChatSender(WeChatBase):
 
         # Add.
         self.handlers.append(handler)
-
 
     def wrap_try_send(
         self,
@@ -516,7 +501,6 @@ class WeChatSender(WeChatBase):
             receive_ids = [receive_id]
         else:
             receive_ids = receive_id
-
 
         @functools_wraps(func)
         def wrap(
@@ -568,9 +552,7 @@ class WeChatSender(WeChatBase):
 
             return result
 
-
         return wrap
-
 
     def start(self) -> None:
         """
@@ -583,7 +565,6 @@ class WeChatSender(WeChatBase):
         # Report.
         print('Start sender.')
 
-
     def stop(self) -> None:
         """
         Stop sender.
@@ -595,7 +576,6 @@ class WeChatSender(WeChatBase):
         # Report.
         print('Stop sender.')
 
-
     def end(self) -> None:
         """
         End sender.
@@ -606,6 +586,5 @@ class WeChatSender(WeChatBase):
 
         # Report.
         print('End sender.')
-
 
     __del__ = end

@@ -8,7 +8,6 @@
 @Explain : Log methods.
 """
 
-
 from reykit.rlog import Log
 from reykit.ros import Folder, join_path
 
@@ -17,17 +16,14 @@ from .rreceive import WeChatMessage
 from .rsend import WeChatSendParameters
 from .rwechat import WeChat
 
-
 __all__ = (
     'WeChatLog',
 )
-
 
 class WeChatLog(WeChatBase):
     """
     WeChat log type.
     """
-
 
     def __init__(
         self,
@@ -58,7 +54,6 @@ class WeChatLog(WeChatBase):
         # Add handler.
         self.__add_handler()
 
-
     def __make_dir(self) -> Folder:
         """
         Make directory 'project_dir/log'.
@@ -77,7 +72,6 @@ class WeChatLog(WeChatBase):
         folder.make()
 
         return folder
-
 
     def __add_handler(self) -> None:
         """
@@ -107,7 +101,6 @@ class WeChatLog(WeChatBase):
             format_=format_
         )
 
-
     @property
     def print_colour(self) -> bool:
         """
@@ -123,7 +116,6 @@ class WeChatLog(WeChatBase):
 
         return result
 
-
     @print_colour.setter
     def print_colour(self, value: bool) -> None:
         """
@@ -138,7 +130,6 @@ class WeChatLog(WeChatBase):
         self.rrlog.print_colour = value
         self.rrlog_print.print_colour = value
         self.rrlog_file.print_colour = value
-
 
     def log_receive(
         self,
@@ -181,7 +172,6 @@ class WeChatLog(WeChatBase):
             format_message_=content_file,
             level=level
         )
-
 
     def log_send(
         self,

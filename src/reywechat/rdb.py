@@ -8,7 +8,6 @@
 @Explain : Database methods.
 """
 
-
 from enum import StrEnum
 from reydb import rorm, Database
 from reykit.rbase import throw, catch_exc
@@ -22,7 +21,6 @@ from .rreceive import WeChatMessage
 from .rsend import WeChatSendTypeEnum, WeChatSenderStatusEnum, WeChatSendParameters
 from .rwechat import WeChat
 
-
 __all__ = (
     'WeChatDatabaseSendStatusEnum',
     'DatabaseORMTableContactUser',
@@ -32,7 +30,6 @@ __all__ = (
     'DatabaseORMTableMessageSend',
     'WeChatDatabase'
 )
-
 
 class WeChatDatabaseSendStatusEnum(StrEnum):
     """
@@ -50,7 +47,6 @@ class WeChatDatabaseSendStatusEnum(StrEnum):
     CANCEL = 'cancel'
     'Send cancelled.'
 
-
 class DatabaseORMTableContactUser(rorm.Table):
     """
     Database "contact_user" table ORM model.
@@ -64,7 +60,6 @@ class DatabaseORMTableContactUser(rorm.Table):
     name: str = rorm.Field(rorm.types.TEXT, comment='User name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
-
 
 class DatabaseORMTableContactRoom(rorm.Table):
     """
@@ -80,7 +75,6 @@ class DatabaseORMTableContactRoom(rorm.Table):
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
-
 class DatabaseORMTableContactRoomUser(rorm.Table):
     """
     Database "contact_room_user" table ORM model.
@@ -95,7 +89,6 @@ class DatabaseORMTableContactRoomUser(rorm.Table):
     name: str = rorm.Field(rorm.types.TEXT, comment='Chat room user name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
-
 
 class DatabaseORMTableMessageReceive(rorm.Table):
     """
@@ -153,7 +146,6 @@ class DatabaseORMTableMessageReceive(rorm.Table):
     data: str = rorm.Field(rorm.types.TEXT, not_null=True, comment='Message data.')
     file_id: int = rorm.Field(comment='Message file ID, from the file API.')
 
-
 class DatabaseORMTableMessageSend(rorm.Table):
     """
     Database "message_send" table ORM model.
@@ -172,13 +164,11 @@ class DatabaseORMTableMessageSend(rorm.Table):
     parameter: str = rorm.Field(rorm.JSONB, not_null=True, comment='Send parameters.')
     file_id: int = rorm.Field(comment='Message file ID, from the file API.')
 
-
 class WeChatDatabase(WeChatBase):
     """
     WeChat database type.
     Can create database used "self.build_db" method.
     """
-
 
     def __init__(
         self,
@@ -213,7 +203,6 @@ class WeChatDatabase(WeChatBase):
 
         # Loop.
         self.__start_from_message_send()
-
 
     def build_db(self) -> None:
         """
@@ -447,7 +436,6 @@ class WeChatDatabase(WeChatBase):
         self.update_contact_room()
         self.update_contact_room_user()
 
-
     def update_contact_user(self) -> None:
         """
         Update table "contact_user".
@@ -503,7 +491,6 @@ class WeChatDatabase(WeChatBase):
         ## Close.
         conn.close()
 
-
     def update_contact_room(self) -> None:
         """
         Update table "contact_room".
@@ -558,7 +545,6 @@ class WeChatDatabase(WeChatBase):
 
         ## Close.
         conn.close()
-
 
     def update_contact_room_user(
         self,
@@ -648,7 +634,6 @@ class WeChatDatabase(WeChatBase):
         ## Close.
         conn.close()
 
-
     def update_message_send(
         self,
         hook_id: list[str],
@@ -679,12 +664,10 @@ class WeChatDatabase(WeChatBase):
             hook_id=hook_id
         )
 
-
     def __add_receiver_handler_to_contact_user(self) -> None:
         """
         Add receiver handler, write record to table "contact_user".
         """
-
 
         def receiver_handler_to_contact_user(message: WeChatMessage) -> None:
             """
@@ -714,16 +697,13 @@ class WeChatDatabase(WeChatBase):
                     update_time=':NOW()'
                 )
 
-
         # Add handler.
         self.wechat.receiver.add_handler(receiver_handler_to_contact_user)
-
 
     def __add_receiver_handler_to_contact_room(self) -> None:
         """
         Add receiver handler, write record to table "contact_room".
         """
-
 
         def receiver_handler_to_contact_room(message: WeChatMessage) -> None:
             """
@@ -798,16 +778,13 @@ class WeChatDatabase(WeChatBase):
                     data
                 )
 
-
         # Add handler.
         self.wechat.receiver.add_handler(receiver_handler_to_contact_room)
-
 
     def __add_receiver_handler_to_contact_room_user(self) -> None:
         """
         Add receiver handler, write record to table "contact_room_user".
         """
-
 
         def receiver_handler_to_contact_room_user(message: WeChatMessage) -> None:
             """
@@ -827,16 +804,13 @@ class WeChatDatabase(WeChatBase):
                 ## Insert.
                 self.update_contact_room_user(message.room)
 
-
         # Add handler.
         self.wechat.receiver.add_handler(receiver_handler_to_contact_room_user)
-
 
     def __add_receiver_handler_to_message_receive(self) -> None:
         """
         Add receiver handler, write record to table "message_receive".
         """
-
 
         def receiver_handler_to_message_receive(message: WeChatMessage) -> None:
             """
@@ -877,16 +851,13 @@ class WeChatDatabase(WeChatBase):
                 'message_id'
             )
 
-
         # Add handler.
         self.wechat.receiver.add_handler(receiver_handler_to_message_receive)
-
 
     def __add_sender_handler_update_send_status(self) -> None:
         """
         Add sender handler, update field "status" of table "message_send".
         """
-
 
         def sender_handler_update_send_status(send_params: WeChatSendParameters) -> None:
             """
@@ -920,10 +891,8 @@ class WeChatDatabase(WeChatBase):
                 data
             )
 
-
         # Add handler.
         self.wechat.sender.add_handler(sender_handler_update_send_status)
-
 
     def __download_file(
         self,
@@ -956,13 +925,11 @@ class WeChatDatabase(WeChatBase):
 
         return cache_path, file_name
 
-
     @wrap_thread
     def __start_from_message_send(self) -> None:
         """
         Start loop read record from table "message_send", put send queue.
         """
-
 
         def __from_message_send() -> None:
             """
@@ -1031,7 +998,6 @@ class WeChatDatabase(WeChatBase):
             # Commit.
             conn.commit()
 
-
         # Loop.
         while True:
 
@@ -1040,7 +1006,6 @@ class WeChatDatabase(WeChatBase):
 
             # Wait.
             sleep(1)
-
 
     def is_valid(
         self,
@@ -1108,7 +1073,6 @@ class WeChatDatabase(WeChatBase):
         judge = result.scalar()
 
         return judge
-
 
     def _insert_send(self, send_params: WeChatSendParameters) -> None:
         """

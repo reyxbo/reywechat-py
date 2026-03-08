@@ -8,7 +8,6 @@
 @Explain : Receive methods.
 """
 
-
 from typing import Any, TypedDict, NotRequired, Literal, overload
 from collections.abc import Callable
 from queue import Queue
@@ -28,12 +27,10 @@ from .rclient import SendLogChat
 from .rsend import WeChatSendTypeEnum, WeChatSenderStatusEnum
 from .rwechat import WeChat
 
-
 __all__ = (
     'WeChatMessage',
     'WechatReceiver'
 )
-
 
 MessageParameters = TypedDict(
     'MessageParameters',
@@ -86,7 +83,6 @@ MessageParametersFileUploading = TypedDict(
     }
 )
 
-
 class WeChatMessage(WeChatBase):
     """
     WeChat message type.
@@ -94,7 +90,6 @@ class WeChatMessage(WeChatBase):
 
     SendTypeEnum = WeChatSendTypeEnum
     SendStatusEnum = WeChatSenderStatusEnum
-
 
     def __init__(
         self,
@@ -151,7 +146,6 @@ class WeChatMessage(WeChatBase):
         ## Update call next.
         self.is_call_next
 
-
     @property
     def params(self) -> MessageParameters:
         """
@@ -175,7 +169,6 @@ class WeChatMessage(WeChatBase):
 
         return params
 
-
     def __str__(self) -> str:
         """
         Return parameters dictionary in string format.
@@ -189,7 +182,6 @@ class WeChatMessage(WeChatBase):
         params_str = str(self.params)
 
         return params_str
-
 
     @property
     def user_name(self) -> str | None:
@@ -216,7 +208,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['user_name']
 
-
     @property
     def room_name(self) -> str | None:
         """
@@ -242,7 +233,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['room_name']
 
-
     @property
     def window_name(self) -> str:
         """
@@ -264,7 +254,6 @@ class WeChatMessage(WeChatBase):
             self._cache['window_name'] = self.room_name
 
         return self._cache['window_name']
-
 
     @property
     def text(self) -> str:
@@ -427,7 +416,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['text']
 
-
     @property
     def voice_len(self) -> float:
         """
@@ -452,7 +440,6 @@ class WeChatMessage(WeChatBase):
         self._cache['voice_len'] = int(voice_len_us_str) / 1000
 
         return self._cache['voice_len']
-
 
     @property
     def video_len(self) -> int:
@@ -479,7 +466,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['video_len']
 
-
     @property
     def business_card_name(self) -> str:
         """
@@ -503,7 +489,6 @@ class WeChatMessage(WeChatBase):
         self._cache['business_card_name'] = search(pattern, self.data)
 
         return self._cache['business_card_name']
-
 
     @property
     def share_type(self) -> int:
@@ -529,7 +514,6 @@ class WeChatMessage(WeChatBase):
         self._cache['share_type'] = int(share_type_str)
 
         return self._cache['share_type']
-
 
     @property
     def share_params(self) -> MessageShareParameters:
@@ -569,7 +553,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['share_params']
 
-
     @property
     def is_file_uploading(self) -> bool:
         """
@@ -591,7 +574,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_file_uploading']
-
 
     @property
     def file_params_uploading(self) -> MessageParametersFileUploading:
@@ -621,7 +603,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['file_params_uploading']
 
-
     @property
     def is_file_uploaded(self) -> bool:
         """
@@ -643,7 +624,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_file_uploaded']
-
 
     @property
     def is_forword(self) -> bool:
@@ -667,7 +647,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_forward']
 
-
     @property
     def is_mini_program(self) -> bool:
         """
@@ -689,7 +668,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_mini_program']
-
 
     @property
     def is_quote(self) -> bool:
@@ -713,7 +691,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_quote']
 
-
     @property
     def is_quote_me(self) -> bool:
         """
@@ -735,7 +712,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_quote_me']
-
 
     @property
     def quote_params(self) -> MessageQuoteParameters:
@@ -792,7 +768,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['quote_params']
 
-
     @property
     def is_money(self) -> bool:
         """
@@ -814,7 +789,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_money']
-
 
     @property
     def money_amount(self) -> float:
@@ -840,7 +814,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['money_amount']
 
-
     @property
     def is_app(self) -> bool:
         """
@@ -862,7 +835,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_app']
-
 
     @property
     def at_names(self) -> list[str]:
@@ -888,7 +860,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['at_names']
 
-
     @property
     def is_at(self) -> bool:
         """
@@ -908,7 +879,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_at']
 
-
     @property
     def is_at_me(self) -> bool:
         """
@@ -927,7 +897,6 @@ class WeChatMessage(WeChatBase):
         self._cache['is_at_me'] = self.receiver.wechat.client.login_info['name'] in self.at_names
 
         return self._cache['is_at_me']
-
 
     @property
     def is_call(self) -> bool:
@@ -984,7 +953,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_call']
 
-
     @property
     def call_text(self) -> str:
         """
@@ -1022,7 +990,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['call_text']
 
-
     @property
     def is_call_next(self) -> bool:
         """
@@ -1051,7 +1018,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_call_next']
 
-
     @property
     def is_last_call(self) -> bool:
         """
@@ -1077,7 +1043,6 @@ class WeChatMessage(WeChatBase):
 
         return self.is_last_call
 
-
     @property
     def is_pat(self) -> bool:
         """
@@ -1099,7 +1064,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_pat']
-
 
     @property
     def is_pat_me(self) -> bool:
@@ -1123,7 +1087,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_pat_me']
-
 
     @property
     def pat_text(self) -> str:
@@ -1161,7 +1124,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['pat_text']
 
-
     @property
     def is_recall(self) -> bool:
         """
@@ -1183,7 +1145,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_recall']
-
 
     @property
     def is_new_user(self) -> bool:
@@ -1211,7 +1172,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_new_user']
 
-
     @property
     def is_new_room(self) -> bool:
         """
@@ -1237,7 +1197,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_new_room']
 
-
     @property
     def is_new_room_user(self) -> bool:
         """
@@ -1261,7 +1220,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_new_room_user']
 
-
     @property
     def new_room_user_name(self) -> str | None:
         """
@@ -1282,7 +1240,6 @@ class WeChatMessage(WeChatBase):
         self._cache['new_room_user_name'] = result
 
         return result
-
 
     @property
     def is_change_room_name(self) -> bool:
@@ -1306,7 +1263,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_change_room_name']
 
-
     @property
     def change_room_name(self) -> str | None:
         """
@@ -1327,7 +1283,6 @@ class WeChatMessage(WeChatBase):
         self._cache['change_room_name'] = result
 
         return self._cache['change_room_name']
-
 
     @property
     def is_kick_out_room(self) -> bool:
@@ -1352,7 +1307,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_kick_out_room']
 
-
     @property
     def is_dissolve_room(self) -> bool:
         """
@@ -1375,7 +1329,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_dissolve_room']
-
 
     @property
     def image_qrcodes(self) -> list[str]:
@@ -1400,7 +1353,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['image_qrcodes']
 
-
     @property
     def is_html(self) -> bool:
         """
@@ -1422,7 +1374,6 @@ class WeChatMessage(WeChatBase):
         )
 
         return self._cache['is_html']
-
 
     @property
     def is_xml(self) -> bool:
@@ -1447,7 +1398,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['is_xml']
 
-
     @property
     def valid(self) -> bool:
         """
@@ -1469,7 +1419,6 @@ class WeChatMessage(WeChatBase):
 
         return self._cache['valid']
 
-
     def check_call(self) -> None:
         """
         Check if is call self name, if not, throw exception `WeChatTriggerContinueExit`.
@@ -1478,7 +1427,6 @@ class WeChatMessage(WeChatBase):
         # Check.
         if not self.is_call:
             self.trigger_continue()
-
 
     def check_search_text(self, *patterns: str, text: str | None = None) -> str | tuple[str | None, ...]:
         """
@@ -1511,7 +1459,6 @@ class WeChatMessage(WeChatBase):
             self.trigger_continue()
 
         return result
-
 
     @overload
     def reply(
@@ -1616,12 +1563,10 @@ class WeChatMessage(WeChatBase):
             **params
         )
 
-
 class WechatReceiver(WeChatBase):
     """
     WeChat receiver type.
     """
-
 
     def __init__(
         self,
@@ -1658,13 +1603,11 @@ class WechatReceiver(WeChatBase):
         self.__start_callback()
         self.__start_receiver(self.max_receiver)
 
-
     @wrap_thread
     def __start_callback(self) -> None:
         """
         Start callback socket.
         """
-
 
         def put_queue(data: bytes) -> None:
             """
@@ -1733,14 +1676,12 @@ class WechatReceiver(WeChatBase):
             )
             self.queue.put(message)
 
-
         # Listen socket.
         listen_socket(
             '127.0.0.1',
             self.wechat.client.callback_port,
             put_queue
         )
-
 
     @wrap_thread
     def __start_receiver(
@@ -1754,7 +1695,6 @@ class WechatReceiver(WeChatBase):
         ----------
         max_receiver : Maximum number of receivers.
         """
-
 
         def handles(message: WeChatMessage) -> None:
             """
@@ -1771,7 +1711,6 @@ class WechatReceiver(WeChatBase):
                 *self.handlers
             ]
 
-
             # Handle.
             def handle_handler_exception(exc_text, *_) -> None:
                 """
@@ -1785,7 +1724,6 @@ class WechatReceiver(WeChatBase):
                 # Save.
                 message.exc_reports.append(exc_text)
 
-
             ## Loop.
             for handler in handlers:
                 handler = wrap_exc(handler, handler=handle_handler_exception)
@@ -1793,7 +1731,6 @@ class WechatReceiver(WeChatBase):
 
             # Log.
             self.wechat.error.log_receive(message)
-
 
         # Thread pool.
         thread_pool = ThreadPool(
@@ -1818,7 +1755,6 @@ class WechatReceiver(WeChatBase):
             message = self.queue.get()
             thread_pool(message)
 
-
     def add_handler(
         self,
         handler: Callable[[WeChatMessage], Any]
@@ -1833,7 +1769,6 @@ class WechatReceiver(WeChatBase):
 
         # Add.
         self.handlers.append(handler)
-
 
     def __receiver_handler_file(
         self,
@@ -1911,7 +1846,6 @@ class WechatReceiver(WeChatBase):
         }
         message.file = message_file
 
-
     def start(self) -> None:
         """
         Start receiver.
@@ -1922,7 +1856,6 @@ class WechatReceiver(WeChatBase):
 
         # Report.
         print('Start receiver.')
-
 
     def stop(self) -> None:
         """
@@ -1935,7 +1868,6 @@ class WechatReceiver(WeChatBase):
         # Report.
         print('Stop receiver.')
 
-
     def end(self) -> None:
         """
         End receiver.
@@ -1946,6 +1878,5 @@ class WechatReceiver(WeChatBase):
 
         # Report.
         print('End receiver.')
-
 
     __del__ = end

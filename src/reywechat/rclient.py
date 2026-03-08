@@ -8,7 +8,6 @@
 @Explain : Client methods.
 """
 
-
 from typing import Any, TypedDict, NotRequired, Literal
 from os.path import dirname as os_dirname
 from reykit.rbase import throw
@@ -20,13 +19,11 @@ from reykit.rtime import now, wait
 from .rbase import WeChatBase, WeChatClientErorr
 from .rwechat import WeChat
 
-
 __all__ = (
     'CLIENT_VERSION_MEMORY_OFFSETS',
     'WeChatClient',
     'simulate_client_version'
 )
-
 
 SendLogChat = TypedDict(
     'SendLogChat',
@@ -44,7 +41,6 @@ Key "time" is second unit timestamp.
 Key "text" is chat content.
 """
 
-
 CLIENT_VERSION_MEMORY_OFFSETS = (
     61280212,
     61372636,
@@ -55,12 +51,10 @@ CLIENT_VERSION_MEMORY_OFFSETS = (
     61675784
 )
 
-
 class WeChatClient(WeChatBase):
     """
     WeChat client type.
     """
-
 
     def __init__(
         self,
@@ -86,7 +80,6 @@ class WeChatClient(WeChatBase):
         # Start.
         self.start()
         self.login_info = self.get_login_info()
-
 
     def start(self) -> None:
         """
@@ -129,7 +122,6 @@ class WeChatClient(WeChatBase):
         # Report.
         print(f'Start WeChat client API successfully, address is "127.0.0.1:{self.client_port}".')
 
-
     def popup_select_wechat_dir(self, default: str = 'C:/Program Files (x86)/Tencent/WeChat') -> str:
         """
         Pop up WeChat installation directory select box.
@@ -166,7 +158,6 @@ class WeChatClient(WeChatBase):
             raise WeChatClientErorr(f'WeChat installation directory has no client "{client_file_name}"')
 
         return wechat_dir
-
 
     def create_inject_file(self, wechat_dir: str) -> None:
         """
@@ -206,7 +197,6 @@ class WeChatClient(WeChatBase):
         }
         config_file(config)
 
-
     def start_wechat(self, wechat_dir: str) -> None:
         """
         Start
@@ -215,7 +205,6 @@ class WeChatClient(WeChatBase):
         # Start.
         wechat_path = f'{wechat_dir}/WeChat.exe'
         run_cmd(wechat_path, True)
-
 
     def check_api(self) -> bool:
         """
@@ -235,7 +224,6 @@ class WeChatClient(WeChatBase):
             return False
 
         return True
-
 
     def request(
         self,
@@ -282,7 +270,6 @@ class WeChatClient(WeChatBase):
 
         return result
 
-
     def check_client_login(self) -> bool:
         """
         Check if the client is logged in.
@@ -303,7 +290,6 @@ class WeChatClient(WeChatBase):
         judge = status == 3
 
         return judge
-
 
     def get_login_info(self, cache: bool = True) -> dict[
         Literal[
@@ -375,7 +361,6 @@ class WeChatClient(WeChatBase):
 
         return info
 
-
     def get_contact_table_user(self, cache: bool = True) -> list[dict[Literal['id', 'account', 'name', 'remark'], str | None]]:
         """
         Get contact chat user table.
@@ -414,7 +399,6 @@ class WeChatClient(WeChatBase):
 
         return table
 
-
     def get_contact_table_room(self, cache: bool = True) -> list[dict[Literal['id', 'name', 'remark'], str | None]]:
         """
         Get contact chat room table.
@@ -452,7 +436,6 @@ class WeChatClient(WeChatBase):
 
         return table
 
-
     def get_contact_name(
         self,
         id_: str,
@@ -486,7 +469,6 @@ class WeChatClient(WeChatBase):
         name = result['nick']
 
         return name
-
 
     def get_room_users(
         self,
@@ -526,7 +508,6 @@ class WeChatClient(WeChatBase):
 
         return ids
 
-
     def get_room_user_dict(
         self,
         room_id: str,
@@ -563,7 +544,6 @@ class WeChatClient(WeChatBase):
         }
 
         return user_dict
-
 
     def send_text(
         self,
@@ -622,7 +602,6 @@ class WeChatClient(WeChatBase):
         hook_ids = hook_id.split(',')
 
         return hook_ids
-
 
     def send_text_quote(
         self,
@@ -685,7 +664,6 @@ class WeChatClient(WeChatBase):
 
         return hook_ids
 
-
     def send_file(
         self,
         receive_id: str,
@@ -719,7 +697,6 @@ class WeChatClient(WeChatBase):
         hook_ids = hook_id.split(',')
 
         return hook_ids
-
 
     def send_image(
         self,
@@ -755,7 +732,6 @@ class WeChatClient(WeChatBase):
 
         return hook_ids
 
-
     def send_emotion(
         self,
         receive_id: str,
@@ -779,7 +755,6 @@ class WeChatClient(WeChatBase):
 
         # Request.
         self.request(api, data)
-
 
     def send_share(
         self,
@@ -825,7 +800,6 @@ class WeChatClient(WeChatBase):
         hook_ids = hook_id.split(',')
 
         return hook_ids
-
 
     def send_log(
         self,
