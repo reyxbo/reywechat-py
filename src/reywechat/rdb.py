@@ -156,7 +156,7 @@ class DatabaseORMTableMessageSend(rorm.Table):
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
     update_time: rorm.Datetime = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
     send_id: int = rorm.Field(key_auto=True, comment='Send ID.')
-    hook_id: int = rorm.Field(rorm.types.ARRAY(rorm.types.CHAR(32)), comment='Multiple hook UUID (multiple messages may be sent).')
+    hook_id: list[int] = rorm.Field(rorm.types.ARRAY(rorm.types.CHAR(32)), comment='Multiple hook UUID (multiple messages may be sent).')
     message_id: int = rorm.Field(rorm.types.BIGINT, comment='Message UUID.')
     status: int = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
     type: int = rorm.Field(rorm.ENUM(WeChatSendTypeEnum), not_null=True, comment='Message type.')
@@ -429,7 +429,7 @@ class WeChatDatabase(WeChatBase):
         # Build.
 
         ## WeChat.
-        self.db.wechat.build.build(tables=tables, views_stats=views_stats, skip=True)
+        self.db.wechat.build(tables=tables, views_stats=views_stats, skip=True)
 
         # Update.
         self.update_contact_user()
