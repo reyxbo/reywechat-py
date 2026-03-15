@@ -55,9 +55,9 @@ class DatabaseORMTableContactUser(rorm.Table):
     __name__ = 'contact_user'
     __comment__ = 'User contact table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
     user_id: str = rorm.Field(rorm.types.VARCHAR(24), key=True, comment='User ID.')
-    name: str = rorm.Field(rorm.types.TEXT, comment='User name.')
+    name: str | None = rorm.Field(rorm.types.TEXT, comment='User name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
@@ -69,9 +69,9 @@ class DatabaseORMTableContactRoom(rorm.Table):
     __name__ = 'contact_room'
     __comment__ = 'Chat room contact table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
     room_id: str = rorm.Field(rorm.types.VARCHAR(31), key=True, comment='Chat room ID.')
-    name: str = rorm.Field(rorm.types.TEXT, comment='Chat room name.')
+    name: str | None = rorm.Field(rorm.types.TEXT, comment='Chat room name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
@@ -83,10 +83,10 @@ class DatabaseORMTableContactRoomUser(rorm.Table):
     __name__ = 'contact_room_user'
     __comment__ = 'Chat room user contact table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
     room_id: str = rorm.Field(rorm.types.VARCHAR(31), key=True, comment='Chat room ID.')
     user_id: str = rorm.Field(rorm.types.VARCHAR(24), key=True, comment='Chat room user ID.')
-    name: str = rorm.Field(rorm.types.TEXT, comment='Chat room user name.')
+    name: str | None = rorm.Field(rorm.types.TEXT, comment='Chat room user name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
@@ -100,8 +100,8 @@ class DatabaseORMTableMessageReceive(rorm.Table):
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
     message_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Message time.')
     message_id: int = rorm.Field(rorm.types.BIGINT, key=True, comment='Message ID.')
-    room_id: str = rorm.Field(rorm.types.VARCHAR(31), index_n=True, comment='Message chat room ID, null for private chat.')
-    user_id: str = rorm.Field(rorm.types.VARCHAR(24), index_n=True, comment='Message sender user ID, null for system message.')
+    room_id: str | None = rorm.Field(rorm.types.VARCHAR(31), index_n=True, comment='Message chat room ID, null for private chat.')
+    user_id: str | None = rorm.Field(rorm.types.VARCHAR(24), index_n=True, comment='Message sender user ID, null for system message.')
     type: int = rorm.Field(
         rorm.types.SMALLINT,
         not_null=True,
@@ -144,7 +144,7 @@ class DatabaseORMTableMessageReceive(rorm.Table):
         )
     )
     data: str = rorm.Field(rorm.types.TEXT, not_null=True, comment='Message data.')
-    file_id: int = rorm.Field(comment='Message file ID, from the file API.')
+    file_id: int | None = rorm.Field(comment='Message file ID, from the file API.')
 
 class DatabaseORMTableMessageSend(rorm.Table):
     """
@@ -154,15 +154,15 @@ class DatabaseORMTableMessageSend(rorm.Table):
     __name__ = 'message_send'
     __comment__ = 'Message send table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
     send_id: int = rorm.Field(key_auto=True, comment='Send ID.')
-    hook_id: list[int] = rorm.Field(rorm.types.ARRAY(rorm.types.CHAR(32)), comment='Multiple hook UUID (multiple messages may be sent).')
-    message_id: int = rorm.Field(rorm.types.BIGINT, comment='Message UUID.')
+    hook_id: list[int] | None = rorm.Field(rorm.types.ARRAY(rorm.types.CHAR(32)), comment='Multiple hook UUID (multiple messages may be sent).')
+    message_id: int | None = rorm.Field(rorm.types.BIGINT, comment='Message UUID.')
     status: int = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
     type: int = rorm.Field(rorm.ENUM(WeChatSendTypeEnum), not_null=True, comment='Message type.')
     receive_id: str = rorm.Field(rorm.types.VARCHAR(31), not_null=True, index_n=True, comment='Receive to user ID or chat room ID.')
     parameter: str = rorm.Field(rorm.JSONB, not_null=True, comment='Send parameters.')
-    file_id: int = rorm.Field(comment='Message file ID, from the file API.')
+    file_id: int | None = rorm.Field(comment='Message file ID, from the file API.')
 
 class WeChatDatabase(WeChatBase):
     """
