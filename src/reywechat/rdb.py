@@ -23,15 +23,15 @@ from .rwechat import WeChat
 
 __all__ = (
     'WeChatDatabaseSendStatusEnum',
-    'DatabaseORMTableContactUser',
-    'DatabaseORMTableContactRoom',
-    'DatabaseORMTableContactRoomUser',
-    'DatabaseORMTableMessageReceive',
-    'DatabaseORMTableMessageSend',
+    'WechatORMTableContactUser',
+    'WechatORMTableContactRoom',
+    'WechatORMTableContactRoomUser',
+    'WechatORMTableMessageReceive',
+    'WeChatORMTableMessageSend',
     'WeChatDatabase'
 )
 
-class WeChatDatabaseSendStatusEnum(StrEnum):
+class WeChatDatabaseSendStatusEnum(WeChatBase, StrEnum):
     """
     WeChat database send status enumeration type.
     """
@@ -47,9 +47,9 @@ class WeChatDatabaseSendStatusEnum(StrEnum):
     CANCEL = 'cancel'
     'Send cancelled.'
 
-class DatabaseORMTableContactUser(rorm.Table):
+class WechatORMTableContactUser(WeChatBase, rorm.Table):
     """
-    Database "contact_user" table ORM model.
+    Wechat `contact_user` table ORM model.
     """
 
     __name__ = 'contact_user'
@@ -61,9 +61,9 @@ class DatabaseORMTableContactUser(rorm.Table):
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
-class DatabaseORMTableContactRoom(rorm.Table):
+class WechatORMTableContactRoom(WeChatBase, rorm.Table):
     """
-    Database "contact_room" table ORM model.
+    Wechat `contact_room` table ORM model.
     """
 
     __name__ = 'contact_room'
@@ -75,9 +75,9 @@ class DatabaseORMTableContactRoom(rorm.Table):
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
-class DatabaseORMTableContactRoomUser(rorm.Table):
+class WechatORMTableContactRoomUser(WeChatBase, rorm.Table):
     """
-    Database "contact_room_user" table ORM model.
+    Wechat `contact_room_user` table ORM model.
     """
 
     __name__ = 'contact_room_user'
@@ -90,9 +90,9 @@ class DatabaseORMTableContactRoomUser(rorm.Table):
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
     is_valid: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the valid.')
 
-class DatabaseORMTableMessageReceive(rorm.Table):
+class WechatORMTableMessageReceive(WeChatBase, rorm.Table):
     """
-    Database "message_receive" table ORM model.
+    Wechat `message_receive` table ORM model.
     """
 
     __name__ = 'message_receive'
@@ -146,9 +146,9 @@ class DatabaseORMTableMessageReceive(rorm.Table):
     data: str = rorm.Field(rorm.types.TEXT, not_null=True, comment='Message data.')
     file_id: int | None = rorm.Field(comment='Message file ID, from the file API.')
 
-class DatabaseORMTableMessageSend(rorm.Table):
+class WeChatORMTableMessageSend(WeChatBase, rorm.Table):
     """
-    Database "message_send" table ORM model.
+    Wechat `message_send` table ORM model.
     """
 
     __name__ = 'message_send'
@@ -158,8 +158,8 @@ class DatabaseORMTableMessageSend(rorm.Table):
     send_id: int = rorm.Field(key_auto=True, comment='Send ID.')
     hook_id: list[int] | None = rorm.Field(rorm.types.ARRAY(rorm.types.CHAR(32)), comment='Multiple hook UUID (multiple messages may be sent).')
     message_id: int | None = rorm.Field(rorm.types.BIGINT, comment='Message UUID.')
-    status: int = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
-    type: int = rorm.Field(rorm.ENUM(WeChatSendTypeEnum), not_null=True, comment='Message type.')
+    status: WeChatDatabaseSendStatusEnum = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
+    type: WeChatSendTypeEnum = rorm.Field(rorm.ENUM(WeChatSendTypeEnum), not_null=True, comment='Message type.')
     receive_id: str = rorm.Field(rorm.types.VARCHAR(31), not_null=True, index_n=True, comment='Receive to user ID or chat room ID.')
     parameter: str = rorm.Field(rorm.JSONB, not_null=True, comment='Send parameters.')
     file_id: int | None = rorm.Field(comment='Message file ID, from the file API.')
@@ -217,11 +217,11 @@ class WeChatDatabase(WeChatBase):
 
         ## Table.
         tables = [
-            DatabaseORMTableContactUser,
-            DatabaseORMTableContactRoom,
-            DatabaseORMTableContactRoomUser,
-            DatabaseORMTableMessageReceive,
-            DatabaseORMTableMessageSend
+            WechatORMTableContactUser,
+            WechatORMTableContactRoom,
+            WechatORMTableContactRoomUser,
+            WechatORMTableMessageReceive,
+            WeChatORMTableMessageSend
         ]
 
         ## View stats.
