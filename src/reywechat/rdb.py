@@ -161,7 +161,7 @@ class WeChatORMTableMessageSend(WeChatBase, rorm.Table):
     status: str = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
     type: str = rorm.Field(rorm.ENUM(WeChatSendTypeEnum), not_null=True, comment='Message type.')
     receive_id: str = rorm.Field(rorm.types.VARCHAR(31), not_null=True, index_n=True, comment='Receive to user ID or chat room ID.')
-    parameter: str = rorm.Field(rorm.JSONB, not_null=True, comment='Send parameters.')
+    parameter: rorm.Json = rorm.Field(rorm.JSONB, not_null=True, comment='Send parameters.')
     file_id: int | None = rorm.Field(comment='Message file ID, from the file API.')
 
 class WeChatDatabase(WeChatBase):
