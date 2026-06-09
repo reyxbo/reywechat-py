@@ -227,7 +227,7 @@ class WeChatDatabase(WeChatBase):
         ## View stats.
         views_stats = [
             {
-                'table': 'stats',
+                'table': 'stats_wechat',
                 'items': [
                     {
                         'name': 'receive_count',
