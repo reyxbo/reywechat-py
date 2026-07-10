@@ -17,8 +17,9 @@ from reykit.ros import File
 from reykit.rsys import run_cmd, search_process, popup_select
 from reykit.rtime import wait, sleep
 from reykit.rwrap import wrap_thread
+from reywechat_hook.rhook import SEND_PORT, RECEIVE_PORT
 
-from .rbase import SEND_PORT, RECEIVE_PORT, WeChatBase, WeChatClientErorr
+from .rbase import WeChatBase, WeChatClientErorr
 from .rwechat import WeChat
 
 __all__ = (
@@ -161,7 +162,7 @@ class WeChatClient(WeChatBase):
 
         # Check.
         if not is_socket_listening('127.0.0.1', SEND_PORT):
-            throw(WeChatClientErorr, text='must be run hook program first')
+            throw(WeChatClientErorr, text='need to start hook program of `reyxbo-hook` package first')
 
         # Inject hook.
         send_socket(

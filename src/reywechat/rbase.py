@@ -11,8 +11,6 @@
 from reykit.rbase import Base, Error, Exit
 
 __all__ = (
-    'SEND_PORT',
-    'RECEIVE_PORT',
     'WeChatBase',
     'WeChatError',
     'WeChatClientErorr',
@@ -20,11 +18,6 @@ __all__ = (
     'WeChatTriggerContinueExit',
     'WeChatTriggerBreakExit'
 )
-
-SEND_PORT = 49152
-'Hook program listening port send message.'
-RECEIVE_PORT = 49153
-'Main program listening port receive message.'
 
 class WeChatBase(Base):
     """

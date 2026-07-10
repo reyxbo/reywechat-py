@@ -21,7 +21,7 @@ __all__ = (
 class WeChat(WeChatBase):
     """
     WeChat type.
-    Need to start hook program first, both communicate through listening sockets.
+    Need to start hook program of `reyxbo-hook` package first, both communicate through listening sockets.
     Warnings, only applicable to WeChat clients with version `4.1.2.17`.
     Warnings, must enabled file automatic download and set to 1024 MB.
     """
