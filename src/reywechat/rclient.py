@@ -17,9 +17,8 @@ from reykit.ros import File
 from reykit.rsys import run_cmd, search_process, popup_select
 from reykit.rtime import wait, sleep
 from reykit.rwrap import wrap_thread
-from reywechat_hook.rhook import SEND_PORT, RECEIVE_PORT
 
-from .rbase import WeChatBase, WeChatClientErorr
+from .rbase import SEND_PORT, RECEIVE_PORT, WeChatBase, WeChatClientErorr
 from .rwechat import WeChat
 
 __all__ = (

@@ -2303,13 +2303,12 @@ wheels = [
 
 [[package]]
 name = "reywechat"
-version = "1.1.7"
+version = "1.1.8"
 source = { editable = "." }
 dependencies = [
     { name = "reydb" },
     { name = "reykit" },
     { name = "reyserver" },
-    { name = "reywechat-hook" },
 ]
 
 [package.metadata]
@@ -2317,18 +2316,6 @@ requires-dist = [
     { name = "reydb" },
     { name = "reykit" },
     { name = "reyserver" },
-    { name = "reywechat-hook" },
-]
-
-[[package]]
-name = "reywechat-hook"
-version = "1.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "reykit" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/71/515de2872cf2e65a0a677ea08acc9043e68fd27753a984f5643717eba132/reywechat_hook-1.0.0-py3-none-any.whl", hash = "sha256:4f6811b59c8e7f673ee3371ab65bbd0f337c6c54b87c4d751ea8932be28bd117", size = 13305901, upload-time = "2026-07-10T15:14:20.691Z" },
 ]
 
 [[package]]
