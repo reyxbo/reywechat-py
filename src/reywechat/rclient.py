@@ -93,7 +93,7 @@ class WeChatClient(WeChatBase):
         self.queue: Queue[CallbackParams] = Queue()
         self.hook_pid: int | None = None
         self.login_info: LoginInfo | None = None
-        self._injected_hook: bool = False
+        self._injected: bool = False
         self._initialized_cdn: bool = False
         self._logined: bool = False
         self._pending_callbacks: dict[str, PendingCallback] = {}
@@ -113,7 +113,7 @@ class WeChatClient(WeChatBase):
         def callback(params: CallbackParams) -> None:
             if params['type'] == 11024:
                 self.hook_pid = params['data']['pid']
-                self._injected_hook = True
+                self._injected = True
             elif params['type'] == 11025:
                 self.login_info = {
                     'id': params['data']['wxid'],
@@ -125,7 +125,6 @@ class WeChatClient(WeChatBase):
                 }
                 self._logined = True
             elif params['type'] == 11228:
-                print(11111111111111111111111)
                 self._initialized_cdn = True
             self.queue.put(params)
         print(f'start listening on port {RECEIVE_PORT}')
@@ -181,7 +180,7 @@ class WeChatClient(WeChatBase):
             'inject'
         )
         wait(
-            lambda : self._injected_hook,
+            lambda : self._injected,
             _interval=0.1,
             _timeout=10
         )
