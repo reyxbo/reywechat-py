@@ -126,12 +126,12 @@ class WeChatClient(WeChatBase):
             elif params['type'] == 11228:
                 self._initialized_cdn = True
             self.queue.put(params)
+        print(f'start listening on port {RECEIVE_PORT}')
         listen_socket(
             '127.0.0.1',
             RECEIVE_PORT,
             callback
         )
-        print(f'start listening on port {RECEIVE_PORT}')
 
     def start(self) -> None:
         """
