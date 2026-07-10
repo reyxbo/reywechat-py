@@ -118,7 +118,7 @@ class WeChatHookLoader(WeChatBase):
         self._enable_utf8()
         self._init_socket()
 
-    def _call(self, offset: int, argtypes: list, restype) -> ctypes._CFunctionType:
+    def _call(self, offset: int, argtypes: list, restype) -> ctypes._CFuncPtr:
         """
         Call function by offset.
 
