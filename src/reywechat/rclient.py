@@ -18,7 +18,7 @@ from reykit.rsys import run_cmd, search_process, popup_select
 from reykit.rtime import wait, sleep
 from reykit.rwrap import wrap_thread
 
-from .rbase import WeChatBase, WeChatClientErorr
+from .rbase import SEND_PORT, RECEIVE_PORT, WeChatBase, WeChatClientErorr
 from .rwechat import WeChat
 
 __all__ = (
@@ -26,8 +26,6 @@ __all__ = (
     'CallbackParams',
     'PendingCallback',
     'LoginInfo',
-    'SEND_PORT',
-    'RECEIVE_PORT',
     'WeChatClient'
 )
 
@@ -72,11 +70,6 @@ Key "name" is nickname.
 Key "phone" is phone number.
 Key "head_image" is head image URL.
 """
-
-SEND_PORT = 49152
-'Send socket port to send message.'
-RECEIVE_PORT = 49153
-'Listen socket port to receive message.'
 
 class WeChatClient(WeChatBase):
     """
@@ -138,6 +131,7 @@ class WeChatClient(WeChatBase):
             RECEIVE_PORT,
             callback
         )
+        print(f'start listening on port {RECEIVE_PORT}')
 
     def start(self) -> None:
         """
