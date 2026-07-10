@@ -106,11 +106,11 @@ class WeChatClient(WeChatBase):
         self._pending_callbacks: dict[str, PendingCallback] = {}
 
         # Start.
-        self.__run_callback()
-        self.__start()
+        self.run_callback()
+        self.start()
 
     @wrap_thread
-    def __run_callback(self) -> None:
+    def run_callback(self) -> None:
         """
         Run callback socket receive message.
         """
@@ -139,7 +139,7 @@ class WeChatClient(WeChatBase):
             callback
         )
 
-    def __start(self) -> None:
+    def start(self) -> None:
         """
         Start client control API.
         """
