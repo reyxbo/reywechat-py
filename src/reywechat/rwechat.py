@@ -8,7 +8,6 @@
 @Explain : WeChat methods.
 """
 
-from os import getcwd as os_getcwd
 from reydb import Database
 from reykit.rbase import block
 from reyserver.rclient import ServerClient
@@ -23,9 +22,8 @@ class WeChat(WeChatBase):
     """
     WeChat type.
 
-    Warnings, only applicable to WeChat clients with version `3.9.12.56`.
-
-    Warnings, must enabled file automatic download.
+    Warnings, only applicable to WeChat clients with version `4.1.2.17`.
+    Warnings, must enabled file automatic download and set to 1024 MB.
     """
 
     def __init__(
@@ -35,9 +33,7 @@ class WeChat(WeChatBase):
         max_receiver: int = 2,
         call_name: str | None = None,
         log_dir: str = 'log',
-        cache_dir: str = 'cache',
-        client_port: int = 1024,
-        callback_port: int = 1025
+        cache_dir: str = 'cache'
     ) -> None:
         """
         Build instance attributes.
@@ -66,10 +62,10 @@ class WeChat(WeChatBase):
         # Build.
 
         ## Instance.
-        self.client = WeChatClient(self, client_port, callback_port)
+        self.client = WeChatClient(self)
         self.cache = WeChatCache(self, cache_dir)
         self.error = WeChatLog(self, log_dir)
-        self.receiver = WechatReceiver(self, max_receiver, call_name)
+        self.receiver = WechatReceiver(self, self.client.queue, max_receiver, call_name)
         self.trigger = self.receiver.trigger
         self.sender = WeChatSender(self)
         self.db = WeChatDatabase(self, db, sclient)

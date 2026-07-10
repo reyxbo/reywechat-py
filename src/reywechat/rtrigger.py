@@ -136,9 +136,8 @@ class WeChatTrigger(WeChatBase):
         self.rules.append(rule)
 
         # Sort.
-        fund_sort = lambda rule: rule['level']
         self.rules.sort(
-            key=fund_sort,
+            key=lambda rule: rule['level'],
             reverse=True
         )
 

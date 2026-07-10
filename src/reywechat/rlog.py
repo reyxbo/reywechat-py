@@ -9,7 +9,7 @@
 """
 
 from reykit.rlog import Log
-from reykit.ros import Folder, join_path
+from reykit.ros import Folder
 
 from .rbase import WeChatBase
 from .rreceive import WeChatMessage

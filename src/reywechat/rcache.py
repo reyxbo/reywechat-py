@@ -8,7 +8,7 @@
 @Explain : Cache methods.
 """
 
-from reykit.ros import FileStore, join_path
+from reykit.ros import FileStore
 
 from .rbase import WeChatBase
 from .rwechat import WeChat

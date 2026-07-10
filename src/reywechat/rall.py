@@ -12,6 +12,7 @@ from .rbase import *
 from .rcache import *
 from .rclient import *
 from .rdb import *
+from .rhook import *
 from .rlog import *
 from .rreceive import *
 from .rsend import *

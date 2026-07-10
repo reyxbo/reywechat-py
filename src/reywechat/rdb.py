@@ -156,7 +156,6 @@ class WeChatORMTableMessageSend(WeChatBase, rorm.Table):
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
     update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
     send_id: int = rorm.Field(key_auto=True, comment='Send ID.')
-    hook_id: list[int] | None = rorm.Field(rorm.types.ARRAY(rorm.types.CHAR(32)), comment='Multiple hook UUID (multiple messages may be sent).')
     message_id: int | None = rorm.Field(rorm.types.BIGINT, comment='Message UUID.')
     status: str = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
     type: str = rorm.Field(rorm.ENUM(WeChatSendTypeEnum), not_null=True, comment='Message type.')
@@ -431,239 +430,6 @@ class WeChatDatabase(WeChatBase):
         ## WeChat.
         self.db.wechat.build(tables=tables, views_stats=views_stats, skip=True)
 
-        # Update.
-        self.update_contact_user()
-        self.update_contact_room()
-        self.update_contact_room_user()
-
-    def update_contact_user(self) -> None:
-        """
-        Update table "contact_user".
-        """
-
-        # Get data.
-        contact_table = self.wechat.client.get_contact_table_user()
-        user_data = [
-            {
-                'user_id': row['id'],
-                'name': row['name']
-            }
-            for row in contact_table
-        ]
-        user_ids = [
-            row['id']
-            for row in contact_table
-        ]
-
-        # Insert and update.
-        conn = self.db.wechat.connect()
-
-        ## Insert.
-        if contact_table != []:
-            conn.execute.insert(
-                'contact_user',
-                user_data,
-                'user_id',
-                'update',
-                update_time=':NOW()'
-            )
-
-        ## Update.
-        if user_ids == []:
-            sql = (
-                'UPDATE "contact_user"\n'
-                'SET "is_contact" = FALSE'
-            )
-        else:
-            sql = (
-                'UPDATE "contact_user"\n'
-                'SET "is_contact" = FALSE\n'
-                'WHERE "user_id" NOT IN :user_ids'
-            )
-        conn.execute(
-            sql,
-            user_ids=user_ids
-        )
-
-        ## Commit.
-        conn.commit()
-
-        ## Close.
-        conn.close()
-
-    def update_contact_room(self) -> None:
-        """
-        Update table "contact_room".
-        """
-
-        # Get data.
-        contact_table = self.wechat.client.get_contact_table_room()
-        room_data = [
-            {
-                'room_id': row['id'],
-                'name': row['name']
-            }
-            for row in contact_table
-        ]
-        room_ids = [
-            row['id']
-            for row in contact_table
-        ]
-
-        # Insert and update.
-        conn = self.db.wechat.connect()
-
-        ## Insert.
-        if contact_table != []:
-            conn.execute.insert(
-                'contact_room',
-                room_data,
-                'room_id',
-                'update',
-                update_time=':NOW()'
-            )
-
-        ## Update.
-        if room_ids == []:
-            sql = (
-                'UPDATE "contact_room"\n'
-                'SET "is_contact" = FALSE'
-            )
-        else:
-            sql = (
-                'UPDATE "contact_room"\n'
-                'SET "is_contact" = FALSE\n'
-                'WHERE "room_id" NOT IN :room_ids'
-            )
-        conn.execute(
-            sql,
-            room_ids=room_ids
-        )
-
-        ## Commit.
-        conn.commit()
-
-        ## Close.
-        conn.close()
-
-    def update_contact_room_user(
-        self,
-        room_id: str | None = None
-    ) -> None:
-        """
-        Update table "contact_room_user".
-
-        Parameters
-        ----------
-        room_id : Chat room ID.
-            - "None": Update all chat room.
-            - "str": Update this chat room.
-        """
-
-        # Get data.
-
-        ## All.
-        if room_id is None:
-            contact_table = self.wechat.client.get_contact_table_room()
-
-        ## Given.
-        else:
-            contact_table = [{'id': room_id}]
-
-        room_user_data = [
-            {
-                'room_id': row['id'],
-                'user_id': user_id,
-                'name': name
-            }
-            for row in contact_table
-            for user_id, name
-            in self.wechat.client.get_room_user_dict(row['id']).items()
-        ]
-        room_user_ids = [
-            '%s,%s' % (
-                row['room_id'],
-                row['user_id']
-            )
-            for row in room_user_data
-        ]
-
-        # Insert and update.
-        conn = self.db.wechat.connect()
-
-        ## Insert.
-        if room_user_data != []:
-            conn.execute.insert(
-                'contact_room_user',
-                room_user_data,
-                ('room_id', 'user_id'),
-                'update',
-                update_time=':NOW()'
-            )
-
-        ## Update.
-        if room_user_ids == []:
-            sql = (
-                'UPDATE "contact_room_user"\n'
-                'SET "is_contact" = FALSE'
-            )
-        elif room_id is None:
-            sql = (
-                'UPDATE "contact_room_user"\n'
-                'SET "is_contact" = FALSE\n'
-                'WHERE CONCAT("room_id", \',\', "user_id") NOT IN :room_user_ids'
-            )
-        else:
-            sql = (
-                'UPDATE "contact_room_user"\n'
-                'SET "is_contact" = FALSE\n'
-                'WHERE (\n'
-                '    "room_id" = :room_id\n'
-                '    AND CONCAT("room_id", \',\', "user_id") NOT IN :room_user_ids\n'
-                ')'
-            )
-        conn.execute(
-            sql,
-            room_user_ids=room_user_ids,
-            room_id=room_id
-        )
-
-        ## Commit.
-        conn.commit()
-
-        ## Close.
-        conn.close()
-
-    def update_message_send(
-        self,
-        hook_id: list[str],
-        message_id: int
-    ) -> None:
-        """
-        Update table "message_send" by hook ID.
-
-        Parameters
-        ----------
-        hook_id : Hook ID.
-        message_id : Message ID.
-        """
-
-        # Check.
-        if not hook_id:
-            throw(ValueError, hook_id)
-
-        # Update.
-        sql = (
-            'UPDATE "message_send"\n'
-            'SET "message_id" = :message_id\n'
-            'WHERE :hook_id = ANY("hook_id")'
-        )
-        self.db.wechat.execute(
-            sql,
-            message_id=message_id,
-            hook_id=hook_id
-        )
-
     def __add_receiver_handler_to_contact_user(self) -> None:
         """
         Add receiver handler, write record to table "contact_user".
@@ -877,11 +643,9 @@ class WeChatDatabase(WeChatBase):
                 status = WeChatDatabaseSendStatusEnum.SUCCESS
             else:
                 status = WeChatDatabaseSendStatusEnum.FAIL
-            hook_id = send_params.hook_id and tuple(send_params.hook_id)
             data = {
                 'send_id': send_params.send_id,
                 'update_time': ':NOW()',
-                'hook_id': hook_id,
                 'status': status
             }
 
@@ -978,7 +742,7 @@ class WeChatDatabase(WeChatBase):
                 if file_id is not None:
                     try:
                         file_path, file_name = self.__download_file(file_id)
-                    except:
+                    except Exception:
                         exc_text, *_ = catch_exc()
                         print(exc_text)
                         continue
