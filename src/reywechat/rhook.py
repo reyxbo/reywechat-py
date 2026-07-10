@@ -20,8 +20,7 @@ from .rbase import SEND_PORT, RECEIVE_PORT, WeChatBase
 
 __all__ = (
     'WeChatHookLoader',
-    'WeChatHook',
-    'WeChatHookSocket'
+    'WeChatHook'
 )
 
 _path_dir: Final[str] = os_split(os_abspath(__file__))[0]
@@ -300,26 +299,13 @@ class WeChatHook(WeChatBase):
 
         return result
 
-class WeChatHookSocket(WeChatBase):
-    """
-    WeChat hook socket communication.
-    """
-
-    def __init__(self):
-        """
-        Build instance attributes.
-        """
-
-        # Build.
-        self.hook = WeChatHook()
-
-    def start(self) -> None:
+    def start_socket(self) -> None:
         """
         Start socket, will block.
         """
 
         # Receive.
-        self.hook.register_callback(
+        self.register_callback(
             lambda _, request_type, request_data: send_socket(
                 '127.0.0.1',
                 RECEIVE_PORT,
@@ -333,9 +319,9 @@ class WeChatHookSocket(WeChatBase):
         # Send.
         def handler(data: Literal['inject'] | Dict[str, Any]) -> None:
             if data == 'inject':
-                self.hook.inject()
+                self.inject()
             else:
-                self.hook.send_payload(data)
+                self.send_payload(data)
         listen_socket(
             '127.0.0.1',
             SEND_PORT,
