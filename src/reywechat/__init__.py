@@ -17,7 +17,6 @@ rall : All methods.
 rbase : Base methods.
 rclient : Client methods.
 rdb : Database methods.
-rhook : Hook methods.
 rcache : Cache methods.
 rlog : Log methods.
 rreceive : Receive methods.

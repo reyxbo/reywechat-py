@@ -8,17 +8,26 @@
 @Explain : Hook methods.
 """
 
-from typing import Any, Dict, Callable, Final
+from typing import Any, Dict, Literal, Callable, Final
 from os.path import exists as os_exists, abspath as os_abspath, split as os_split, join as os_join
 from json import dumps as json_dumps, loads as json_loads
 import ctypes
-
-from .rbase import WeChatBase
+from reykit.rbase import throw
+from reykit.rnet import listen_socket, send_socket
+from reykit.rsys import get_sys_bits
 
 __all__ = (
+    'SEND_PORT',
+    'RECEIVE_PORT',
     'WeChatHookLoader',
-    'WeChatHook'
+    'WeChatHook',
+    'WeChatHookSocket'
 )
+
+SEND_PORT = 49152
+'Listen socket port to send message.'
+RECEIVE_PORT = 49153
+'Send socket port to receive message.'
 
 _path_dir: Final[str] = os_split(os_abspath(__file__))[0]
 _path_helper_dll: Final[str] = os_join(_path_dir, 'Helper_4.1.2.17.dll')
@@ -93,7 +102,7 @@ def _on_close(client_id: int) -> None:
     if _socket_id == int(client_id):
         _socket_id = None
 
-class WeChatHookLoader(WeChatBase):
+class WeChatHookLoader(object):
     """
     WeChat client hook loader.
     """
@@ -222,19 +231,27 @@ class WeChatHookLoader(WeChatBase):
         """
         return self._call(self.OFFSET_DESTROY, [], ctypes.c_bool)()
 
-class WeChatHook(WeChatBase):
+class WeChatHook(object):
     """
     WeChat hook.
     """
 
     def __init__(self):
+        """
+        Build instance attributes.
+        """
+
+        # Check System bits.
+        sys_bits = get_sys_bits()
+        if sys_bits != 32:
+            throw(AssertionError, text='python must be 32-bit')
 
         # Build.
         self.loader: WeChatHookLoader | None = None
 
-    def start(self) -> bool:
+    def inject(self) -> bool:
         """
-        Start WeChat hook system.
+        Inject WeChat hook.
 
         Returns
         -------
@@ -246,15 +263,6 @@ class WeChatHook(WeChatBase):
         result = bool(self.loader.inject())
 
         return result
-
-    def stop(self) -> None:
-        """
-        Stop.
-        """
-
-        # Stop.
-        if self.loader:
-            self.loader.destroy()
 
     def register_callback(
         self,
@@ -296,3 +304,45 @@ class WeChatHook(WeChatBase):
         )
 
         return result
+
+class WeChatHookSocket(object):
+    """
+    WeChat hook socket communication.
+    """
+
+    def __init__(self):
+        """
+        Build instance attributes.
+        """
+
+        # Build.
+        self.hook = WeChatHook()
+
+    def start(self) -> None:
+        """
+        Start socket, will block.
+        """
+
+        # Receive.
+        self.hook.register_callback(
+            lambda _, request_type, request_data: send_socket(
+                '127.0.0.1',
+                RECEIVE_PORT,
+                {
+                    'type': request_type,
+                    'data': request_data
+                }
+            )
+        )
+
+        # Send.
+        def handler(data: Literal['inject'] | Dict[str, Any]) -> None:
+            if data == 'inject':
+                self.hook.inject()
+            else:
+                self.hook.send_payload(data)
+        listen_socket(
+            '127.0.0.1',
+            SEND_PORT,
+            handler
+        )

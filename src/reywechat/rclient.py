@@ -12,12 +12,13 @@ from typing import TypedDict, Literal
 from threading import Event
 from queue import Queue
 from reykit.rbase import throw
+from reykit.rnet import is_socket_listening, listen_socket, send_socket
 from reykit.ros import File
-from reykit.rsys import run_cmd, search_process, popup_select, get_sys_bits
+from reykit.rsys import run_cmd, search_process, popup_select
 from reykit.rtime import wait, sleep
+from reykit.rwrap import wrap_thread
 
 from .rbase import WeChatBase, WeChatClientErorr
-from .rhook import WeChatHook
 from .rwechat import WeChat
 
 __all__ = (
@@ -25,6 +26,8 @@ __all__ = (
     'CallbackParams',
     'PendingCallback',
     'LoginInfo',
+    'SEND_PORT',
+    'RECEIVE_PORT',
     'WeChatClient'
 )
 
@@ -70,6 +73,11 @@ Key "phone" is phone number.
 Key "head_image" is head image URL.
 """
 
+SEND_PORT = 49152
+'Send socket port to send message.'
+RECEIVE_PORT = 49153
+'Listen socket port to receive message.'
+
 class WeChatClient(WeChatBase):
     """
     WeChat client type.
@@ -90,120 +98,96 @@ class WeChatClient(WeChatBase):
         # Build.
         self.wechat = wechat
         self.queue: Queue[CallbackParams] = Queue()
-        self.hook = WeChatHook()
         self.hook_pid: int | None = None
         self.login_info: LoginInfo | None = None
-        self._injected: bool = False
-        self._initialized: bool = False
+        self._injected_hook: bool = False
+        self._initialized_cdn: bool = False
         self._logined: bool = False
         self._pending_callbacks: dict[str, PendingCallback] = {}
 
         # Start.
-        self.start()
+        self.__run_callback()
+        self.__start()
 
-    def start(self) -> None:
-            """
-            Start client control API.
-            """
+    @wrap_thread
+    def __run_callback(self) -> None:
+        """
+        Run callback socket receive message.
+        """
 
-            # Check.
+        # Run.
+        def callback(params: CallbackParams) -> None:
+            if params['type'] == 11024:
+                self.hook_pid = params['data']['pid']
+                self._injected_hook = True
+            elif params['type'] == 11025:
+                self.login_info = {
+                    'id': params['data']['wxid'],
+                    'account': params['data']['account'],
+                    'name': params['data']['nickname'],
+                    'phone': params['data'].get('phone') or None,
+                    'head_image': params['data'].get('avatar') or None,
+                    'file_dir': params['data']['wx_user_dir']
+                }
+                self._logined = True
+            elif params['type'] == 11228:
+                self._initialized_cdn = True
+            self.queue.put(params)
+        listen_socket(
+            '127.0.0.1',
+            RECEIVE_PORT,
+            callback
+        )
 
-            ## System bits.
-            sys_bits = get_sys_bits()
-            if sys_bits != 32:
-                throw(WeChatClientErorr, text='python must be 32-bit')
+    def __start(self) -> None:
+        """
+        Start client control API.
+        """
 
-            ## WeChat client.
-            if not self.check_wechat_exe():
-                self.start_wechat_exe()
-                sleep(1)
+        # Inject.
+        if not self.check_wechat_exe():
+            self.start_wechat_exe()
+            sleep(1)
+        self.inject_hook()
+        print('Inject WeChat hook successfully.')
 
-            # Inject.
-            self.inject_hook()
-            print('Inject WeChat hook successfully.')
-
-            # Login.
-            if not self._logined:
-                print('Waiting to log in to WeChat...')
-            wait(
-                lambda : self._logined,
-                _interval=0.1
-            )
-            print('Login WeChat client successfully.')
-
-            # Initialize.
-            self.init_hook()
-            wait(
-                lambda : self._initialized,
-                _interval=0.1,
-                _timeout=10
-            )
-            print('WeChat client is ready.')
+        # Login.
+        if not self._logined:
+            print('Waiting to log in to WeChat...')
+        wait(
+            lambda : self._logined,
+            _interval=0.1
+        )
+        print('Login WeChat client successfully.')
 
     def inject_hook(self) -> None:
         """
-        Inject WeChat client hook.
+        Send socket to hook program, inject hook.
         """
 
-        # Callback.
-        def callback(_, request_type: int, request_data: dict[str, str | int]) -> None:
-            """
-            Callback function.
+        # Check.
+        if not is_socket_listening('127.0.0.1', SEND_PORT):
+            throw(WeChatClientErorr, text='must be run hook program first')
 
-            Parameters
-            ----------
-            request_type : Hook request type.
-            request_data : Hook request data.
-            """
-
-            # Handle.
-            if request_type == 11024:
-                self.hook_pid = request_data['pid']
-                self._injected = True
-            elif request_type == 11025:
-                {
-                    "account": "reyhelper",
-                    "avatar": "http://wx.qlogo.cn/mmhead/ver_1/54EF5gBQsGTnj2CbibckfZDViauBT2iaCN6ibiayM34BSIib883tj7n24dZV5BibickTPuWZGyB9uB3D7t8OGR8sVPTsBWFw6Epapo28RNibVJtYYvd4rIQfIaUM16l3v0QnAibYgr/0",
-                    "device_id": "W449f2f0f2e24ca9c93f0b4413a0d5d59",
-                    "is_fake_device_id": 0,
-                    "nickname": "小助手",
-                    "phone": "19916794650",
-                    "pid": 3564,
-                    "unread_msg_count": 0,
-                    "wx_user_dir": "C:\\Users\\Administrator\\xwechat_files\\wxid_6w5hv65m6l6622_393f",
-                    "wxid": "wxid_6w5hv65m6l6622",
-                }
-                self.login_info = {
-                    'id': request_data['wxid'],
-                    'account': request_data['account'],
-                    'name': request_data['nickname'],
-                    'phone': request_data.get('phone') or None,
-                    'head_image': request_data.get('avatar') or None,
-                    'file_dir': request_data['wx_user_dir']
-                }
-                self._logined = True
-            elif request_type == 11228:
-                self._initialized = True
-
-            # Queue.
-            self.queue.put({'type': request_type, 'data': request_data})
-
-        # Inject.
-        self.hook.register_callback(callback)
-        self.hook.start()
+        # Inject hook.
+        send_socket(
+            '127.0.0.1',
+            SEND_PORT,
+            'inject'
+        )
         wait(
-            lambda : self._injected,
+            lambda : self._injected_hook,
             _interval=0.1,
             _timeout=10
         )
 
-    def init_hook(self) -> None:
-        """
-        Initialize hook.
-        """
-
-        # CDN.
+        # Initialize CDN API.
         self.send(11228)
+        wait(
+            lambda : self._initialized_cdn,
+            _interval=0.1,
+            _timeout=10
+        )
 
     def popup_select_wechat_exe(self) -> str:
         """
@@ -223,7 +207,7 @@ class WeChatClient(WeChatBase):
 
         # Judge.
         if wechat_exe_path is None:
-            throw(WeChatClientErorr, text='WeChat execute file not selected')
+            throw(AssertionError, text='WeChat execute file not selected')
 
         return wechat_exe_path
 
@@ -275,14 +259,15 @@ class WeChatClient(WeChatBase):
         """
 
         # Send.
-        result = self.hook.send_payload(
-            {
-                'type': send_type,
-                'data': send_data or {}
-            }
+        data = {
+            'type': send_type,
+            'data': send_data or {}
+        }
+        send_socket(
+            '127.0.0.1',
+            SEND_PORT,
+            data
         )
-        if not result:
-            throw(WeChatClientErorr, text='sending command hook command failed')
 
     def send_text(
         self,
