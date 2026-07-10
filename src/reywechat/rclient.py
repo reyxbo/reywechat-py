@@ -100,6 +100,7 @@ class WeChatClient(WeChatBase):
 
         # Start.
         self.run_callback()
+        sleep(0.1)
         self.start()
 
     @wrap_thread
@@ -124,6 +125,7 @@ class WeChatClient(WeChatBase):
                 }
                 self._logined = True
             elif params['type'] == 11228:
+                print(11111111111111111111111)
                 self._initialized_cdn = True
             self.queue.put(params)
         print(f'start listening on port {RECEIVE_PORT}')
@@ -154,6 +156,15 @@ class WeChatClient(WeChatBase):
         )
         print('Login WeChat client successfully.')
 
+        # Initialize CDN API.
+        self.send(11228)
+        wait(
+            lambda : self._initialized_cdn,
+            _interval=0.1,
+            _timeout=10
+        )
+        print('WeChat client readye')
+
     def inject_hook(self) -> None:
         """
         Send socket to hook program, inject hook.
@@ -171,14 +182,6 @@ class WeChatClient(WeChatBase):
         )
         wait(
             lambda : self._injected_hook,
-            _interval=0.1,
-            _timeout=10
-        )
-
-        # Initialize CDN API.
-        self.send(11228)
-        wait(
-            lambda : self._initialized_cdn,
             _interval=0.1,
             _timeout=10
         )
