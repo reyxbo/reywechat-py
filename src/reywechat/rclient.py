@@ -99,17 +99,17 @@ class WeChatClient(WeChatBase):
         self._pending_callbacks: dict[str, PendingCallback] = {}
 
         # Start.
-        self.run_callback()
+        self.Listen_callback()
         sleep(0.1)
         self.start()
 
     @wrap_thread
-    def run_callback(self) -> None:
+    def Listen_callback(self) -> None:
         """
-        Run callback socket receive message.
+        Listen callback socket receive message.
         """
 
-        # Run.
+        # Callback.
         def callback(params: CallbackParams) -> None:
             if params['type'] == 11024:
                 self.hook_pid = params['data']['pid']
@@ -127,6 +127,8 @@ class WeChatClient(WeChatBase):
             elif params['type'] == 11228:
                 self._initialized_cdn = True
             self.queue.put(params)
+
+        # Listen
         print(f'start listening on port {RECEIVE_PORT}')
         listen_socket(
             '127.0.0.1',

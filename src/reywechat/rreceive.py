@@ -706,7 +706,7 @@ class WeChatMessage(WeChatBase):
         # Judge.
         self._cache['is_quote_me'] = (
             self.is_quote
-            and '<chatusr>%s</chatusr>' % self.receiver.wechat.client._login_info['id'] in self.data
+            and '<chatusr>%s</chatusr>' % self.receiver.wechat.client.login_info['id'] in self.data
         )
 
         return self._cache['is_quote_me']
@@ -892,7 +892,7 @@ class WeChatMessage(WeChatBase):
             return self._cache['is_at_me']
 
         # Judge.
-        self._cache['is_at_me'] = self.receiver.wechat.client._login_info['name'] in self.at_names
+        self._cache['is_at_me'] = self.receiver.wechat.client.login_info['name'] in self.at_names
 
         return self._cache['is_at_me']
 
@@ -939,7 +939,7 @@ class WeChatMessage(WeChatBase):
             or self.is_pat_me
 
             ## At self.
-            or '@%s\u2005' % self.receiver.wechat.client._login_info['name'] in self.data
+            or '@%s\u2005' % self.receiver.wechat.client.login_info['name'] in self.data
 
             ## Call self.
             or self.data.lstrip().startswith(self.receiver.call_name)
@@ -975,7 +975,7 @@ class WeChatMessage(WeChatBase):
         ## Replace.
 
         ### At.
-        at_me_keyword = '@%s\u2005' % self.receiver.wechat.client._login_info['name']
+        at_me_keyword = '@%s\u2005' % self.receiver.wechat.client.login_info['name']
         text = text.replace(at_me_keyword, '')
 
         ### Call.
@@ -1078,7 +1078,7 @@ class WeChatMessage(WeChatBase):
             return self._cache['is_pat_me']
 
         # Judge.
-        pattern = fr'<template><!\[CDATA\["\$\{{[\da-z_]+\}}" 拍了拍(?:我| "\$\{{{self.receiver.wechat.client._login_info['id']}\}}")\]\]></template>'
+        pattern = fr'<template><!\[CDATA\["\$\{{[\da-z_]+\}}" 拍了拍(?:我| "\$\{{{self.receiver.wechat.client.login_info['id']}\}}")\]\]></template>'
         self._cache['is_pat_me'] = (
             self.is_pat
             and search(pattern, self.data) is not None
@@ -1612,7 +1612,7 @@ class WechatReceiver(WeChatBase):
     def __init__(
         self,
         wechat: WeChat,
-        callback_queue: Queue[CallbackParams],
+        queue: Queue[CallbackParams],
         max_receiver: int,
         call_name: str | None
     ) -> None:
@@ -1622,6 +1622,7 @@ class WechatReceiver(WeChatBase):
         Parameters
         ----------
         wechat : `WeChatClient` instance.
+        queue : Hook callback parameters queue.
         max_receiver : Maximum number of receivers.
         call_name : Trigger call name.
             - `None`: Use account nickname.
@@ -1633,64 +1634,16 @@ class WechatReceiver(WeChatBase):
         # Set attribute.
         self.wechat = wechat
         self.max_receiver = max_receiver
-        call_name = call_name or self.wechat.client._login_info['name']
+        call_name = call_name or self.wechat.client.login_info['name']
         self.call_name = call_name
-        self.callback_queue = callback_queue
-        self.message_queue: Queue[WeChatMessage] = Queue()
+        self.queue = queue
         self.handlers: list[Callable[[WeChatMessage], Any]] = []
         self.started: bool | None = False
         self.mark = Mark()
         self.trigger = WeChatTrigger(self)
 
         # Start.
-        self.__start_callback()
         self.__start_receiver(self.max_receiver)
-
-    @wrap_thread
-    def __start_callback(self) -> None:
-        """
-        Start callback socket.
-        """
-
-        # Get.
-        params: CallbackParams = self.callback_queue.get()
-        request_type, request_data = params['type'], params['data']
-
-        # Pending.
-        if request_type in (
-            11034,
-            11174,
-            11230
-        ):
-            if request_type == 11034:
-                contact_id = request_data['wxid']
-                key = f'{request_type}:{contact_id}'
-            if request_type == 11174:
-                room_id: str = request_data['contactList'][0]['userName']['string']
-                key = f'{request_type}:{room_id}'
-            if request_type == 11230:
-                cdn_id: str = request_data['file_id']
-                key = f'{request_type}:{cdn_id}'
-            pending = self.wechat.client._pending_callbacks[key]
-            pending['data'] = request_data
-            pending['event'].set()
-
-        # Message.
-        if (
-            'msgid' in request_data
-            and request_data['is_pc'] != 1
-        ):
-            message = WeChatMessage(
-                self,
-                int(request_data['timestamp']),
-                request_data['msgid'],
-                request_data['wx_type'],
-                request_data.get('msg') or request_data['raw_msg'],
-                request_data['room_wxid'] or request_data['from_wxid'],
-                request_data['room_wxid'] or None,
-                request_data['from_wxid'] or None
-            )
-            self.message_queue.put(message)
 
     @wrap_thread
     def __start_receiver(
@@ -1761,8 +1714,60 @@ class WechatReceiver(WeChatBase):
                     break
 
             ## Submit.
-            message = self.message_queue.get()
-            thread_pool(message)
+            params: CallbackParams = self.queue.get()
+            message = self.handle_callback_params(params)
+            if message is not None:
+                thread_pool(message)
+
+    def handle_callback_params(self, params: CallbackParams) -> WeChatMessage | None:
+        """
+        Handle callback parameters.
+
+        Parameters
+        ----------
+        params : Callback parameters.
+
+        Returns
+        -------
+        WeChat message instance or null.
+        """
+
+        # Pending.
+        if params['type'] in (
+            11034,
+            11174,
+            11230
+        ):
+            if params['type'] == 11034:
+                contact_id = params['data']['wxid']
+                key = f'{params['type']}:{contact_id}'
+            if params['type'] == 11174:
+                room_id: str = params['data']['contactList'][0]['userName']['string']
+                key = f'{params['type']}:{room_id}'
+            if params['type'] == 11230:
+                cdn_id: str = params['data']['file_id']
+                key = f'{params['type']}:{cdn_id}'
+            pending = self.wechat.client._pending_callbacks[key]
+            pending['data'] = params['data']
+            pending['event'].set()
+
+        # Message.
+        if (
+            'msgid' in params['data']
+            and params['data']['is_pc'] != 1
+        ):
+            message = WeChatMessage(
+                self,
+                int(params['data']['timestamp']),
+                params['data']['msgid'],
+                params['data']['wx_type'],
+                params['data'].get('msg') or params['data']['raw_msg'],
+                params['data']['room_wxid'] or params['data']['from_wxid'],
+                params['data']['room_wxid'] or None,
+                params['data']['from_wxid'] or None
+            )
+
+            return message
 
     def add_handler(
         self,
