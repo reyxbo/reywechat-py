@@ -1761,7 +1761,7 @@ class WechatReceiver(WeChatBase):
                     break
 
             ## Submit.
-            message = self.queue.get()
+            message = self.message_queue.get()
             thread_pool(message)
 
     def add_handler(
