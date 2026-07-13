@@ -18,7 +18,7 @@ from reykit.rsys import run_cmd, search_process, popup_select
 from reykit.rtime import wait, sleep
 from reykit.rwrap import wrap_thread
 
-from .rbase import SEND_PORT, RECEIVE_PORT, WeChatBase, WeChatClientErorr
+from .rbase import WeChatBase, WeChatClientErorr
 from .rwechat import WeChat
 
 __all__ = (
@@ -78,7 +78,9 @@ class WeChatClient(WeChatBase):
 
     def __init__(
         self,
-        wechat: WeChat
+        wechat: WeChat,
+        send_port: int | str,
+        receive_port: int | str
     ) -> None:
         """
         Build instance attributes.
@@ -86,10 +88,14 @@ class WeChatClient(WeChatBase):
         Parameters
         ----------
         wechat : `WeChat` instance.
+        send_port : Hook program listening port send message.
+        receive_port : Main program listening port receive message.
         """
 
         # Build.
         self.wechat = wechat
+        self.send_port = int(send_port)
+        self.receive_port = int(receive_port)
         self.queue: Queue[CallbackParams] = Queue()
         self.hook_pid: int | None = None
         self.login_info: LoginInfo | None = None
@@ -129,10 +135,10 @@ class WeChatClient(WeChatBase):
             self.queue.put(params)
 
         # Listen
-        print(f'start listening on port {RECEIVE_PORT}')
+        print(f'start listening on port {self.receive_port}')
         listen_socket(
             '127.0.0.1',
-            RECEIVE_PORT,
+            self.receive_port,
             callback
         )
 
@@ -172,13 +178,13 @@ class WeChatClient(WeChatBase):
         """
 
         # Check.
-        if not is_socket_listening('127.0.0.1', SEND_PORT):
+        if not is_socket_listening('127.0.0.1', self.send_port):
             throw(WeChatClientErorr, text='need to start hook program of `reyxbo-hook` package first')
 
         # Inject hook.
         send_socket(
             '127.0.0.1',
-            SEND_PORT,
+            self.send_port,
             'inject'
         )
         wait(
@@ -263,7 +269,7 @@ class WeChatClient(WeChatBase):
         }
         send_socket(
             '127.0.0.1',
-            SEND_PORT,
+            self.send_port,
             data
         )
 

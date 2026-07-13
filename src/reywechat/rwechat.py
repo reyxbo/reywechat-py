@@ -33,7 +33,9 @@ class WeChat(WeChatBase):
         max_receiver: int = 2,
         call_name: str | None = None,
         log_dir: str = 'log',
-        cache_dir: str = 'cache'
+        cache_dir: str = 'cache',
+        send_port: int | str = 49152,
+        receive_port: int | str = 49153
     ) -> None:
         """
         Build instance attributes.
@@ -49,6 +51,8 @@ class WeChat(WeChatBase):
         cache_dir : Cache directory.
         client_port : Client control API port.
         callback_port : Message callback port.
+        send_port : Hook program listening port send message.
+        receive_port : Main program listening port receive message.
         """
 
         # Import.
@@ -62,7 +66,7 @@ class WeChat(WeChatBase):
         # Build.
 
         ## Instance.
-        self.client = WeChatClient(self)
+        self.client = WeChatClient(self, send_port, receive_port)
         self.cache = WeChatCache(self, cache_dir)
         self.error = WeChatLog(self, log_dir)
         self.receiver = WechatReceiver(self, self.client.queue, max_receiver, call_name)
