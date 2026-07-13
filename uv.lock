@@ -272,15 +272,15 @@ wheels = [
 
 [[package]]
 name = "anyio"
-version = "4.14.1"
+version = "4.14.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "idna" },
     { name = "typing-extensions", marker = "python_full_version < '3.13'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3b/72/5562aabb8dd7181e8e860622a38bea08d17842b99ecd4c91f84ac95251b0/anyio-4.14.1.tar.gz", hash = "sha256:8d648a3544c1a700e3ff78615cd679e4c5c3f149904287e73687b2596963629e", size = 254831, upload-time = "2026-06-24T20:56:06.017Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/61/cc/a381afa6efea9f496eff839d4a6a1aed3bfafc7b3ab4b0d1b243a12573dd/anyio-4.14.2.tar.gz", hash = "sha256:cfa139f3ed1a23ee8f88a145ddb5ac7605b8bbfd8592baacd7ce3d8bb4313c7f", size = 260176, upload-time = "2026-07-12T20:29:07.082Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/7b/90df4a0a816d98d6ea26f559d87836d494a2cf1fcf063be67df50a7bcc30/anyio-4.14.1-py3-none-any.whl", hash = "sha256:4e5533c5b8ff0a24f5d7a176cbe6877129cd183893f66b537f8f227d10527d72", size = 124875, upload-time = "2026-06-24T20:56:04.413Z" },
+    { url = "https://files.pythonhosted.org/packages/da/35/f2287558c17e29fafc8ef3daf819bb9834061cfa43bff8014f7df7f63bdc/anyio-4.14.2-py3-none-any.whl", hash = "sha256:9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494", size = 125813, upload-time = "2026-07-12T20:29:05.763Z" },
 ]
 
 [[package]]
@@ -678,16 +678,17 @@ wheels = [
 
 [[package]]
 name = "darabonba-core"
-version = "1.0.7"
+version = "1.0.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "alibabacloud-tea" },
     { name = "requests" },
+    { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/06/d9/076bfec3ef28b39d04a9c5e48ef56f20f1a62ed9f684f857a7c503b362b6/darabonba_core-1.0.7.tar.gz", hash = "sha256:c2de2ee260682b4c08c9ec67793de66a2bdf316363b9165f152b9acaa16b4dc3", size = 21705, upload-time = "2026-06-22T12:41:36.562Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/83/9321ccdb7a800c2cb97d8fa34bead5f20141f27f804594fd1fd815c4cd07/darabonba_core-1.0.8.tar.gz", hash = "sha256:f1661960b368e342d3d36434be82d264b70a01c49e843921d8a4dacd217376ae", size = 27604, upload-time = "2026-07-13T02:07:34.093Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/01/34073c5e1742db3399d5837b44ac237e1001f092224a1a2addf30c5f9aaa/darabonba_core-1.0.7-py3-none-any.whl", hash = "sha256:d83ca9253f4bfb0ee8ac1075e23a3480fbd1133f5f96ec08f0e25d1612e299bd", size = 24852, upload-time = "2026-06-22T12:41:35.629Z" },
+    { url = "https://files.pythonhosted.org/packages/6d/88/38800ca22f39a31fdb75c7b2867c61d3af5e2792cee0b72942a639c88a79/darabonba_core-1.0.8-py3-none-any.whl", hash = "sha256:ac093fdd40f88f2f9dfbbbfd7bc143495a3cb031f35b397c98d24edfa6b69483", size = 30957, upload-time = "2026-07-13T02:07:33.138Z" },
 ]
 
 [[package]]
@@ -2227,7 +2228,7 @@ wheels = [
 
 [[package]]
 name = "reyclient"
-version = "1.0.13"
+version = "1.0.17"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alibabacloud-dypnsapi20170525" },
@@ -2235,8 +2236,9 @@ dependencies = [
     { name = "reydb" },
     { name = "reykit" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/47/fd/4f113d4c17c88cef5f45f5bb8d039f7ffcca4e93de63ca3d2ee47deeb0a1/reyclient-1.0.17.tar.gz", hash = "sha256:1f02700bc671ba40f7bed92c43289449f90c8182eb59a41c135c4a696cdebb26", size = 133064, upload-time = "2026-07-13T10:09:06.798Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cb/47/df0bd2b44f791083587805053fa934678ec281602a72aa3a07116d203c61/reyclient-1.0.13-py3-none-any.whl", hash = "sha256:6dc38b3f824208d75c4799b5259966cde8aea8ebb78dc403345367c486115d05", size = 18050, upload-time = "2026-06-16T06:31:03.843Z" },
+    { url = "https://files.pythonhosted.org/packages/04/f0/8ef1d39834dbf762de17a74ba88aa984a23ab1ccdc5a50582eee814c722f/reyclient-1.0.17-py3-none-any.whl", hash = "sha256:065f309c4c1ecd9207ff5d574a4597a250d8c6f3d3a683ec34cf8f200cd04fb5", size = 18198, upload-time = "2026-07-13T10:09:05.095Z" },
 ]
 
 [[package]]
@@ -2257,7 +2259,7 @@ wheels = [
 
 [[package]]
 name = "reykit"
-version = "1.2.65"
+version = "1.2.68"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2281,12 +2283,12 @@ dependencies = [
     { name = "varname" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/26/b4/0c9130757e7b3294039a298e52d8bd8005e27268a160e6559317185eb588/reykit-1.2.65-py3-none-any.whl", hash = "sha256:af9b5a8ff0894f5a76ad3f97cd084461846bc733f2f9734b79da6cfb2ef033d1", size = 75376, upload-time = "2026-07-10T08:10:01.048Z" },
+    { url = "https://files.pythonhosted.org/packages/06/8e/4b1df874ef8dd67edf809825af3531a2485d750214df8a1ef3e4649daa5e/reykit-1.2.68-py3-none-any.whl", hash = "sha256:cfe9030e0db1e388c2c9a954427fc011627051cda60a0a4a644d9ba5f88fadb9", size = 75384, upload-time = "2026-07-13T06:55:11.454Z" },
 ]
 
 [[package]]
 name = "reyserver"
-version = "1.1.212"
+version = "1.1.215"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
@@ -2297,13 +2299,14 @@ dependencies = [
     { name = "sqladmin", extra = ["full"] },
     { name = "uvicorn", extra = ["standard"] },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/9d/16/ab2299939c739ab707544d33095aeb9b6f30e41f623afc62b2725d3261e5/reyserver-1.1.215.tar.gz", hash = "sha256:f3e080e91fa6a1063004e82b352d17e013d245c70b50b13e3cb7c03d74531de6", size = 200430, upload-time = "2026-07-13T09:46:04.098Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/ce/72dad734cec71705b0b12c0e721378abc3ed21897e7dc5e6b98a00ed4f8b/reyserver-1.1.212-py3-none-any.whl", hash = "sha256:f257de563acc76c9ab289a6a14fe4c43dc73dbe6781eb73cb547d5755e2defcb", size = 33285, upload-time = "2026-07-10T05:30:46.633Z" },
+    { url = "https://files.pythonhosted.org/packages/6c/71/7cbff65227049fa357fc4ad31daffceaa0b54408d64c0a3a767f13b20310/reyserver-1.1.215-py3-none-any.whl", hash = "sha256:2100c5f671299587d061105292c751f05bc7c9397d869ea8f1b88d63e61dd1c3", size = 33347, upload-time = "2026-07-13T09:46:02.181Z" },
 ]
 
 [[package]]
 name = "reywechat"
-version = "1.1.8"
+version = "1.1.16"
 source = { editable = "." }
 dependencies = [
     { name = "reydb" },
@@ -2446,7 +2449,7 @@ wheels = [
 
 [[package]]
 name = "sqladmin"
-version = "0.28.0"
+version = "0.29.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
@@ -2455,9 +2458,9 @@ dependencies = [
     { name = "starlette" },
     { name = "wtforms" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/46/c5/8980099072a70bc8238fb8358aca206fd14ede87b081c4ee7291d099e5c1/sqladmin-0.28.0.tar.gz", hash = "sha256:bbc44890f196134521697331b0c630db88f3e7b31c297340b914b97cf6609be3", size = 979545, upload-time = "2026-07-04T20:35:01.791Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/b7/47f955c5f4cbf61b48900f2f77dcff44dec39cab4b8d557567ebf8fc404f/sqladmin-0.29.0.tar.gz", hash = "sha256:901f0c0c11ea29748b997053d77984664abc32be0ee1edcd91b300fce0dcf51c", size = 994200, upload-time = "2026-07-13T10:29:55.386Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/e4/2d2a478c2d4b062c43e43d03f5ebde29f8206100747a2894d3284106cdae/sqladmin-0.28.0-py3-none-any.whl", hash = "sha256:158beae7c6a5bd3512ee84a99995f9179b9dde348ee21792ec146d6964a8ca55", size = 998078, upload-time = "2026-07-04T20:35:00.318Z" },
+    { url = "https://files.pythonhosted.org/packages/87/d5/72dff3db2ff23ec553bcabe220d1ece0ee2d364eaf776a40e26a7c25f9d8/sqladmin-0.29.0-py3-none-any.whl", hash = "sha256:bbace5509f763e313708db01edd3053dacc878dcb09e7cace27dc355d31de41f", size = 1013301, upload-time = "2026-07-13T10:29:53.539Z" },
 ]
 
 [package.optional-dependencies]
@@ -2750,6 +2753,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/56/fe/cb8ef3d6f929d14158fdaaad9925985b7310abc9384dcd4d82dd0016fb59/watchfiles-1.2.0-cp315-cp315-manylinux_2_31_riscv64.whl", hash = "sha256:cee9d5efd929efdac5f7e58f72b3376f676b64050a91c5b99a7094c5b2317488", size = 465096, upload-time = "2026-05-18T04:31:30.384Z" },
     { url = "https://files.pythonhosted.org/packages/25/91/80908e835e100527a9267147b08c0eee1fa6ab0ffec15edc04d1d44885f7/watchfiles-1.2.0-cp315-cp315-musllinux_1_1_aarch64.whl", hash = "sha256:b718bf356bbc15e559bd8ef41782b573b8ae0e3f177ab244b440568d7ea02cfb", size = 630638, upload-time = "2026-05-18T04:30:49.89Z" },
     { url = "https://files.pythonhosted.org/packages/46/4b/95ab2f256bb4af3cb2eb23b9317bda984ee6e0f11733a5c004a6c95b06e3/watchfiles-1.2.0-cp315-cp315-musllinux_1_1_x86_64.whl", hash = "sha256:922c0e019fe68b3ae392965a766b02a71ba1168c932cebc3733cd52c5fe5b377", size = 657684, upload-time = "2026-05-18T04:31:32.027Z" },
+]
+
+[[package]]
+name = "websocket-client"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/41/aa4bf9664e4cda14c3b39865b12251e8e7d239f4cd0e3cc1b6c2ccde25c1/websocket_client-1.9.0.tar.gz", hash = "sha256:9e813624b6eb619999a97dc7958469217c3176312b3a16a4bd1bc7e08a46ec98", size = 70576, upload-time = "2025-10-07T21:16:36.495Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/34/db/b10e48aa8fff7407e67470363eac595018441cf32d5e1001567a7aeba5d2/websocket_client-1.9.0-py3-none-any.whl", hash = "sha256:af248a825037ef591efbf6ed20cc5faa03d3b47b9e5a2230a529eeee1c1fc3ef", size = 82616, upload-time = "2025-10-07T21:16:34.951Z" },
 ]
 
 [[package]]

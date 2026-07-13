@@ -593,6 +593,7 @@ class WeChatDatabase(WeChatBase):
             else:
                 file_id = self.sclient.upload_file(
                     message.file['path'],
+                    'private',
                     message.file['name'],
                     'WeChat'
                 )
@@ -869,6 +870,7 @@ class WeChatDatabase(WeChatBase):
 
             file_id = self.sclient.upload_file(
                 cache_path,
+                'private',
                 file_name,
                 'WeChat'
             )
