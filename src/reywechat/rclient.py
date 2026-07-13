@@ -636,7 +636,7 @@ class WeChatClient(WeChatBase):
 
     def download_media(
         self,
-        media_type: Literal['big_image', 'mid_image', 'video'],
+        media_type: Literal['big_image', 'medium_image', 'thumb_image', 'video'],
         cdn_id: str,
         aes_key: str,
         save_path: str
@@ -660,7 +660,8 @@ class WeChatClient(WeChatBase):
         send_type = 11230
         file_type = {
             'big_image': 1,
-            'mid_image': 2,
+            'medium_image': 2,
+            'thumb_image': 3,
             'video': 4
         }[media_type]
         send_data = {

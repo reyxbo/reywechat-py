@@ -1472,14 +1472,17 @@ class WeChatMessage(WeChatBase):
             media_type = 'big_image'
             cdn_id: str | None = search(' cdnbigimgurl="([0-9a-f]+)"', self.data)
             if cdn_id is None:
-                media_type = 'mid_image'
-                cdn_id: str = search(' cdnmidimgurl="([0-9a-f]+)"', self.data)
+                media_type = 'medium_image'
+                cdn_id: str | None = search(' cdnmidimgurl="([0-9a-f]+)"', self.data)
+            if cdn_id is None:
+                media_type = 'thumb_image'
+                cdn_id: str = search(' cdnthumburl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
             save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.jpg'
         elif self.type == 43:
             media_type = 'video'
-            cdn_id: str | None = search(' cdnbigimgurl="([0-9a-f]+)"', self.data)
+            cdn_id: str = search(' cdnvideourl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
             save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.mp4'
