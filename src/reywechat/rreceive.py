@@ -1479,6 +1479,7 @@ class WeChatMessage(WeChatBase):
             save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.jpg'
         elif self.type == 43:
             media_type = 'video'
+            cdn_id: str | None = search(' cdnbigimgurl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
             save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.mp4'
