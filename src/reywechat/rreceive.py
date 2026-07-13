@@ -1468,21 +1468,20 @@ class WeChatMessage(WeChatBase):
         """
 
         # Parameter.
-        if self.type in (3, 43):
-            cdn_id: str = search_batch(
-                self.data,
-                ' cdnbigimgurl="([0-9a-f]+)"',
-                ' cdnmidimgurl="([0-9a-f]+)"',
-                ' cdnthumburl="([0-9a-f]+)"'
-            )
+        if self.type == 3:
+            media_type = 'big_image'
+            cdn_id: str | None = search(' cdnbigimgurl="([0-9a-f]+)"', self.data)
+            if cdn_id is None:
+                media_type = 'mid_image'
+                cdn_id: str = search(' cdnmidimgurl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
-            if self.type == 3:
-                media_type = 'image'
-                save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.jpg'
-            elif self.type == 43:
-                media_type = 'video'
-                save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.mp4'
+            save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.jpg'
+        elif self.type == 43:
+            media_type = 'video'
+            aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
+            file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
+            save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.mp4'
         else:
             throw(WeChatTriggerError, text='can only be download image or video message')
 

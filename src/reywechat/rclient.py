@@ -636,7 +636,7 @@ class WeChatClient(WeChatBase):
 
     def download_media(
         self,
-        media_type: Literal['image', 'video'],
+        media_type: Literal['big_image', 'mid_image', 'video'],
         cdn_id: str,
         aes_key: str,
         save_path: str
@@ -659,7 +659,8 @@ class WeChatClient(WeChatBase):
         # Parameter.
         send_type = 11230
         file_type = {
-            'image': 1,
+            'big_image': 1,
+            'mid_image': 2,
             'video': 4
         }[media_type]
         send_data = {
@@ -681,7 +682,7 @@ class WeChatClient(WeChatBase):
         self.send(send_type, send_data)
 
         # Wait.
-        is_set_event = event.wait(100)
+        is_set_event = event.wait(300)
         if not is_set_event:
             throw(WeChatClientErorr, text='after sending hook commmand, wait callback timeout')
 
