@@ -1473,13 +1473,13 @@ class WeChatMessage(WeChatBase):
             cdn_id: str = search(' cdnvideourl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
-            save_path = f'{self.receiver.wechat.cache.folder}\\{file_md5}.jpg'
+            save_path = f'{self.receiver.wechat.cache.folder.dir}\\{file_md5}.jpg'
         elif self.type == 43:
             media_type = 'video'
             cdn_id: str = search(' cdnbigimgurl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
-            save_path = f'{self.receiver.wechat.cache.folder}\\{file_md5}.mp4'
+            save_path = f'{self.receiver.wechat.cache.folder.dir}\\{file_md5}.mp4'
         else:
             throw(WeChatTriggerError, text='can only be download image or video message')
 
@@ -1745,8 +1745,8 @@ class WechatReceiver(WeChatBase):
                 room_id: str = params['data']['contactList'][0]['userName']['string']
                 key = f'{params['type']}:{room_id}'
             if params['type'] == 11230:
-                cdn_id: str = params['data']['file_id']
-                key = f'{params['type']}:{cdn_id}'
+                cdn_file_id: str = params['data']['file_id']
+                key = f'{params['type']}:{cdn_file_id}'
             pending = self.wechat.client._pending_callbacks[key]
             pending['data'] = params['data']
             pending['event'].set()
