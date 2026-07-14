@@ -13,7 +13,7 @@ data : Data file.
 
 Modules
 -------
-rall : All methods.
+rall : All import methods.
 rbase : Base methods.
 rclient : Client methods.
 rdb : Database methods.

@@ -96,7 +96,7 @@ class WeChat(WeChatBase):
 
     def start(self) -> None:
         """
-        Start all methods.
+        Start All import methods.
         """
 
         # Start.
