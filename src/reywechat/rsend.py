@@ -552,19 +552,14 @@ class WeChatSender(WeChatBase):
                     **kwargs
                 )
             except BaseException:
-                *_, exc, _ = catch_exc()
+                exc_text, exc, _ = catch_exc()
 
                 # Report.
                 if not isinstance(
                     exc,
                     (WeChatTriggerContinueExit, WeChatTriggerBreakExit)
                 ):
-                    text = '\n'.join(
-                        [
-                            str(arg)
-                            for arg in exc.args
-                        ]
-                    )
+                    text = exc_text
                     for receive_id in receive_ids:
                         self.send(
                             WeChatSendTypeEnum.TEXT,
