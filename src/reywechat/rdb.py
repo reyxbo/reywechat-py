@@ -430,6 +430,112 @@ class WeChatDatabase(WeChatBase):
         ## WeChat.
         self.db.wechat.build(tables=tables, views_stats=views_stats, skip=True)
 
+    def update_contact_room_user(
+        self,
+        room_id: str
+    ) -> None:
+        """
+        Update table "contact_room_user".
+
+        Parameters
+        ----------
+        room_id : Chat room ID.
+        """
+
+        # Get data.
+        room_user_dict = self.wechat.client.get_room_user_dict(room_id)
+        room_user_data = [
+            {
+                'room_id': room_id,
+                'user_id': user_id,
+                'name': name
+            }
+            for user_id, name in room_user_dict.items()
+        ]
+        room_user_ids = [
+            '%s,%s' % (
+                row['room_id'],
+                row['user_id']
+            )
+            for row in room_user_data
+        ]
+
+        # Insert and update.
+        conn = self.db.wechat.connect()
+
+        ## Insert.
+        if room_user_data != []:
+            conn.execute.insert(
+                'contact_room_user',
+                room_user_data,
+                ('room_id', 'user_id'),
+                'update',
+                update_time=':NOW()'
+            )
+
+        ## Update.
+        if room_user_ids == []:
+            sql = (
+                'UPDATE "contact_room_user"\n'
+                'SET "is_contact" = FALSE'
+            )
+        elif room_id is None:
+            sql = (
+                'UPDATE "contact_room_user"\n'
+                'SET "is_contact" = FALSE\n'
+                'WHERE CONCAT("room_id", \',\', "user_id") NOT IN :room_user_ids'
+            )
+        else:
+            sql = (
+                'UPDATE "contact_room_user"\n'
+                'SET "is_contact" = FALSE\n'
+                'WHERE (\n'
+                '    "room_id" = :room_id\n'
+                '    AND CONCAT("room_id", \',\', "user_id") NOT IN :room_user_ids\n'
+                ')'
+            )
+        conn.execute(
+            sql,
+            room_user_ids=room_user_ids,
+            room_id=room_id
+        )
+
+        ## Commit.
+        conn.commit()
+
+        ## Close.
+        conn.close()
+
+    def update_message_send(
+        self,
+        hook_id: list[str],
+        message_id: int
+    ) -> None:
+        """
+        Update table "message_send" by hook ID.
+
+        Parameters
+        ----------
+        hook_id : Hook ID.
+        message_id : Message ID.
+        """
+
+        # Check.
+        if not hook_id:
+            throw(ValueError, hook_id)
+
+        # Update.
+        sql = (
+            'UPDATE "message_send"\n'
+            'SET "message_id" = :message_id\n'
+            'WHERE :hook_id = ANY("hook_id")'
+        )
+        self.db.wechat.execute(
+            sql,
+            message_id=message_id,
+            hook_id=hook_id
+        )
+
     def __add_receiver_handler_to_contact_user(self) -> None:
         """
         Add receiver handler, write record to table "contact_user".
