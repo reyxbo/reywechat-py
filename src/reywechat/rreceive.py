@@ -346,6 +346,8 @@ class WeChatMessage(WeChatBase):
                         self._cache['text'] = f'[视频号"{self.share_params['name']}"分享]'
                     if self.share_params['title'] is not None:
                         self._cache['text'] += f' {self.share_params['title']}'
+                    if self.share_params['desc'] is not None:
+                        self._cache['text'] += f' {self.share_params['desc']}'
 
                 ### Quote.
                 elif self.is_quote:
@@ -538,6 +540,8 @@ class WeChatMessage(WeChatBase):
         if name is None:
             name: str | None = search('.*<nickname>([^<>]+)</nickname>', self.data)
         title: str | None = search('<title>([^<>]+)</title>', self.data)
+        if title == '当前版本不支持展示该内容，请升级至最新版本。':
+            title = None
         desc: str | None = search('.*<des>([^<>]+)</des>', self.data)
         if desc is None:
             desc: str | None = search('.*<desc>([^<>]+)</desc>', self.data)
