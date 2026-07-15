@@ -1009,7 +1009,7 @@ class WeChatMessage(WeChatBase):
             and self.call_text == ''
         )
 
-        ### Mark.
+        ## Mark.
         if self._cache['is_call_next']:
             call_next_mark_value = f'{self.user}_{self.room}'
             self.receiver.mark(call_next_mark_value, 'is_call_next')

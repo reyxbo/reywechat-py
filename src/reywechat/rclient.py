@@ -26,7 +26,8 @@ __all__ = (
     'CallbackParams',
     'PendingCallback',
     'LoginInfo',
-    'WeChatClient'
+    'WeChatClient',
+    'is_video_file'
 )
 
 type CallbackData = dict[str, str | int]

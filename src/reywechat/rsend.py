@@ -18,6 +18,7 @@ from reykit.rtime import now, sleep
 from reykit.rwrap import wrap_thread, wrap_exc
 
 from .rbase import WeChatBase, WeChatTriggerContinueExit, WeChatTriggerBreakExit
+from .rclient import is_video_file
 from .rwechat import WeChat
 
 __all__ = (
@@ -182,6 +183,7 @@ class WeChatSendParameters(WeChatBase):
 
         ## Cache.
         self._text: str | None = None
+        self._cache: dict[str, Any] = {}
 
     @property
     def text(self) -> str:
@@ -194,44 +196,71 @@ class WeChatSendParameters(WeChatBase):
         """
 
         # Cache.
-        if self._text is not None:
-            return self._text
+        if 'text' in self._cache:
+            return self._cache['text']
 
         # Get.
         match self.send_type:
             case WeChatSendTypeEnum.TEXT:
-                self._text = self.params['text']
+                self._cache['text'] = self.params['text']
             case WeChatSendTypeEnum.FILE:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._text = f'[发送文件"{file_name_text}"]'
+                self._cache['text'] = f'[发送文件"{file_name_text}"]'
             case WeChatSendTypeEnum.IMAGE:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._text = f'[发送图片"{file_name_text}"]'
+                self._cache['text'] = f'[发送图片"{file_name_text}"]'
             case WeChatSendTypeEnum.EMOTION:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._text = f'[发送动画表情"{file_name_text}"]'
+                self._cache['text'] = f'[发送动画表情"{file_name_text}"]'
             case WeChatSendTypeEnum.SHARE:
                 title = self.params.get('title')
                 title_text = f'"{title}"' if title else ''
-                self._text = f'[分享链接"{title_text}"]'
+                self._cache['text'] = f'[分享链接"{title_text}"]'
                 text = self.params.get('text')
                 if text is not None:
-                    self._text += f' {text}'
+                    self._cache['text'] += f' {text}'
             case WeChatSendTypeEnum.CARD:
-                self._text = '[发送联系人名片]'
+                self._cache['text'] = '[发送联系人名片]'
             case WeChatSendTypeEnum.FORWARD:
-                self._text = '[转发消息]'
+                self._cache['text'] = '[转发消息]'
             case WeChatSendTypeEnum.XML:
-                self._text = '[发送消息]'
+                self._cache['text'] = '[发送消息]'
 
             ## Throw exception.
             case send_type:
                 throw(ValueError, send_type)
 
-        return self._text
+        return self._cache['text']
+
+    @property
+    def is_video_file(self) -> bool:
+        """
+        Whether the file is a video message file.
+
+        Parameters
+        ----------
+        file_path : Message file path.
+
+        Returns
+        -------
+        Judgement result.
+        """
+
+        # Cache.
+        if 'is_video_file' in self._cache:
+            return self._cache['is_video_file']
+
+        # Judge.
+        self._cache['is_video_file'] = (
+            self.send_type == self.SendTypeEnum.FILE
+            and self.params.get('file_path') is not None
+            and is_video_file(self.params['file_path'])
+        )
+
+        return self._cache['is_video_file']
 
 class WeChatSender(WeChatBase):
     """
