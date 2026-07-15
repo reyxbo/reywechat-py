@@ -1514,7 +1514,7 @@ class WeChatMessage(WeChatBase):
     @overload
     def reply(
         self,
-        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.EMOTION],
+        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.VIDEO, WeChatSendTypeEnum.EMOTION],
         *,
         file_id: str
     ) -> None: ...
@@ -1522,7 +1522,7 @@ class WeChatMessage(WeChatBase):
     @overload
     def reply(
         self,
-        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.EMOTION],
+        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.VIDEO, WeChatSendTypeEnum.EMOTION],
         *,
         file_path: str,
         file_name: str | None = None

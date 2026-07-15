@@ -26,8 +26,7 @@ __all__ = (
     'CallbackParams',
     'PendingCallback',
     'LoginInfo',
-    'WeChatClient',
-    'is_video_file'
+    'WeChatClient'
 )
 
 type CallbackData = dict[str, str | int]
@@ -334,7 +333,7 @@ class WeChatClient(WeChatBase):
         file_path: str
     ) -> None:
         """
-        Send file or video message.
+        Send file.
 
         Parameters
         ----------
@@ -343,10 +342,7 @@ class WeChatClient(WeChatBase):
         """
 
         # Send.
-        if is_video_file(file_path):
-            send_type = 11042
-        else:
-            send_type = 11041
+        send_type = 11041
         send_data = {
             'to_wxid': receive_id,
             'file': file_path
@@ -369,6 +365,28 @@ class WeChatClient(WeChatBase):
 
         # Send.
         send_type = 11040
+        send_data = {
+            'to_wxid': receive_id,
+            'file': file_path
+        }
+        self.send(send_type, send_data)
+
+    def send_video(
+        self,
+        receive_id: str,
+        file_path: str
+    ) -> None:
+        """
+        Send video message.
+
+        Parameters
+        ----------
+        receive_id : User ID or chat room ID of receive message.
+        file_path : Message video file path.
+        """
+
+        # Send.
+        send_type = 11042
         send_data = {
             'to_wxid': receive_id,
             'file': file_path
@@ -682,28 +700,3 @@ class WeChatClient(WeChatBase):
         data: CallbackData = self._pending_callbacks[key]['data']
 
         return data
-
-def is_video_file(file_path: str) -> bool:
-    """
-    Whether the file is a video message file.
-
-    Parameters
-    ----------
-    file_path : Message file path.
-
-    Returns
-    -------
-    Judgement result.
-    """
-
-    # Judge.
-    if file_path.lower().endswith(
-        (
-            '.mp4',
-            '.mov',
-            '.m4v',
-            '.3gp'
-        )
-    ):
-        return True
-    return False

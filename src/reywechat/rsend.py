@@ -18,7 +18,6 @@ from reykit.rtime import now, sleep
 from reykit.rwrap import wrap_thread, wrap_exc
 
 from .rbase import WeChatBase, WeChatTriggerContinueExit, WeChatTriggerBreakExit
-from .rclient import is_video_file
 from .rwechat import WeChat
 
 __all__ = (
@@ -38,6 +37,8 @@ class WeChatSendTypeEnum(WeChatBase, StrEnum):
     'Send file message.'
     IMAGE = 'image'
     'Send image message.'
+    VIDEO = 'video'
+    'Send video message.'
     EMOTION = 'emotion'
     'Send emotion message.'
     SHARE = 'share'
@@ -85,7 +86,7 @@ class WeChatSendParameters(WeChatBase):
     def __init__(
         self,
         sender: 'WeChatSender',
-        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.EMOTION],
+        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.VIDEO, WeChatSendTypeEnum.EMOTION],
         receive_id: str,
         send_id: int | None = None,
         *,
@@ -96,7 +97,7 @@ class WeChatSendParameters(WeChatBase):
     def __init__(
         self,
         sender: 'WeChatSender',
-        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.EMOTION],
+        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.VIDEO, WeChatSendTypeEnum.EMOTION],
         receive_id: str,
         send_id: int | None = None,
         *,
@@ -182,7 +183,6 @@ class WeChatSendParameters(WeChatBase):
         self.status: WeChatSenderStatusEnum
 
         ## Cache.
-        self._text: str | None = None
         self._cache: dict[str, Any] = {}
 
     @property
@@ -211,6 +211,10 @@ class WeChatSendParameters(WeChatBase):
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
                 self._cache['text'] = f'[发送图片"{file_name_text}"]'
+            case WeChatSendTypeEnum.VIDEO:
+                file_name = self.params.get('file_name')
+                file_name_text = f'"{file_name}"' if file_name else ''
+                self._cache['text'] = f'[发送视频"{file_name_text}"]'
             case WeChatSendTypeEnum.EMOTION:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
@@ -234,33 +238,6 @@ class WeChatSendParameters(WeChatBase):
                 throw(ValueError, send_type)
 
         return self._cache['text']
-
-    @property
-    def is_video_file(self) -> bool:
-        """
-        Whether the file is a video message file.
-
-        Parameters
-        ----------
-        file_path : Message file path.
-
-        Returns
-        -------
-        Judgement result.
-        """
-
-        # Cache.
-        if 'is_video_file' in self._cache:
-            return self._cache['is_video_file']
-
-        # Judge.
-        self._cache['is_video_file'] = (
-            self.send_type == self.SendTypeEnum.FILE
-            and self.params.get('file_path') is not None
-            and is_video_file(self.params['file_path'])
-        )
-
-        return self._cache['is_video_file']
 
 class WeChatSender(WeChatBase):
     """
@@ -377,6 +354,8 @@ class WeChatSender(WeChatBase):
                 send_func = self.wechat.client.send_file
             case WeChatSendTypeEnum.IMAGE:
                 send_func = self.wechat.client.send_image
+            case WeChatSendTypeEnum.VIDEO:
+                send_func = self.wechat.client.send_video
             case WeChatSendTypeEnum.EMOTION:
                 send_func = self.wechat.client.send_emotion
             case WeChatSendTypeEnum.SHARE:
@@ -421,7 +400,7 @@ class WeChatSender(WeChatBase):
     @overload
     def send(
         self,
-        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.EMOTION],
+        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.VIDEO, WeChatSendTypeEnum.EMOTION],
         receive_id: str,
         *,
         file_id: str
@@ -430,7 +409,7 @@ class WeChatSender(WeChatBase):
     @overload
     def send(
         self,
-        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.EMOTION],
+        send_type: Literal[WeChatSendTypeEnum.FILE, WeChatSendTypeEnum.IMAGE, WeChatSendTypeEnum.VIDEO, WeChatSendTypeEnum.EMOTION],
         receive_id: str,
         *,
         file_path: str,
