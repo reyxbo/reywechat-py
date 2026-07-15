@@ -206,23 +206,23 @@ class WeChatSendParameters(WeChatBase):
             case WeChatSendTypeEnum.FILE:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._cache['text'] = f'[发送文件"{file_name_text}"]'
+                self._cache['text'] = f'[发送文件{file_name_text}]'
             case WeChatSendTypeEnum.IMAGE:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._cache['text'] = f'[发送图片"{file_name_text}"]'
+                self._cache['text'] = f'[发送图片{file_name_text}]'
             case WeChatSendTypeEnum.VIDEO:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._cache['text'] = f'[发送视频"{file_name_text}"]'
+                self._cache['text'] = f'[发送视频{file_name_text}]'
             case WeChatSendTypeEnum.EMOTION:
                 file_name = self.params.get('file_name')
                 file_name_text = f'"{file_name}"' if file_name else ''
-                self._cache['text'] = f'[发送动画表情"{file_name_text}"]'
+                self._cache['text'] = f'[发送动画表情{file_name_text}]'
             case WeChatSendTypeEnum.SHARE:
                 title = self.params.get('title')
                 title_text = f'"{title}"' if title else ''
-                self._cache['text'] = f'[分享链接"{title_text}"]'
+                self._cache['text'] = f'[分享链接{title_text}]'
                 text = self.params.get('text')
                 if text is not None:
                     self._cache['text'] += f' {text}'
