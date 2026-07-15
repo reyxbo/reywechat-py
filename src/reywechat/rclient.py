@@ -342,18 +342,8 @@ class WeChatClient(WeChatBase):
         """
 
         # Send.
-
-        ## Video.
-        if file_path.lower().endswith(
-            (
-                '.mp4',
-                '.mov',
-                '.m4v',
-                '.3gp'
-            )
-        ):
+        if is_video_file(file_path):
             send_type = 11042
-
         else:
             send_type = 11041
         send_data = {
@@ -691,3 +681,28 @@ class WeChatClient(WeChatBase):
         data: CallbackData = self._pending_callbacks[key]['data']
 
         return data
+
+def is_video_file(file_path: str) -> bool:
+    """
+    Whether the file is a video message file.
+
+    Parameters
+    ----------
+    file_path : Message file path.
+
+    Returns
+    -------
+    Judgement result.
+    """
+
+    # Judge.
+    if file_path.lower().endswith(
+        (
+            '.mp4',
+            '.mov',
+            '.m4v',
+            '.3gp'
+        )
+    ):
+        return True
+    return False
