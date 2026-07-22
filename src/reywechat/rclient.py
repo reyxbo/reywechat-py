@@ -9,6 +9,7 @@
 """
 
 from typing import TypedDict, Literal
+from collections.abc import Callable
 from threading import Event
 from queue import Queue
 from reykit.rbase import throw
@@ -513,6 +514,62 @@ class WeChatClient(WeChatBase):
         }
         self.send(send_type, send_data)
 
+    def _add_pending(
+        self,
+        key: str
+    ):
+        """
+        Add pending event of hook command.
+
+        Parameters
+        ----------
+        key : Event key.
+
+        Returns
+        -------
+        Function of wait pending event and return data.
+        """
+
+        # Add.
+        pending = self._pending_callbacks.get(key)
+        if (
+            pending is not None
+            and not pending['event'].is_set()
+        ):
+            event = pending['event']
+        else:
+            event = Event()
+            self._pending_callbacks[key] = {
+                'event': event,
+                'data': None
+            }
+
+        # Wait function.
+        def wait_pending(timeout: float = 10) -> CallbackData:
+            """
+            Wait pending event and return data.
+
+            Parameters
+            ----------
+            timeout : Wait timeout seconds.
+
+            Returns
+            -------
+            Data.
+            """
+
+            # Wait.
+            is_set_event = event.wait(timeout)
+            if not is_set_event:
+                throw(WeChatClientErorr, text='after sending hook commmand, wait callback timeout')
+
+            # Result.
+            data: CallbackData = self._pending_callbacks[key]['data']
+
+            return data
+
+        return wait_pending
+
     def get_contact_info(
         self,
         contact_id: str
@@ -533,24 +590,15 @@ class WeChatClient(WeChatBase):
         send_type = 11034
         send_data = {'wxid': contact_id}
 
-        # Event.
-        event = Event()
+        # Pending.
         key = f'{send_type}:{contact_id}'
-        self._pending_callbacks[key] = {
-            'event': event,
-            'data': None
-        }
+        wait_pending = self._add_pending(key)
 
         # Send.
         self.send(send_type, send_data)
 
         # Wait.
-        is_set_event = event.wait(10)
-        if not is_set_event:
-            throw(WeChatClientErorr, text='after sending hook commmand, wait callback timeout')
-
-        # Result.
-        data: CallbackData = self._pending_callbacks[key]['data']
+        data = wait_pending()
 
         return data
 
@@ -597,23 +645,14 @@ class WeChatClient(WeChatBase):
         send_data = {'wxid': room_id}
 
         # Event.
-        event = Event()
         key = f'{send_type}:{room_id}'
-        self._pending_callbacks[key] = {
-            'event': event,
-            'data': None
-        }
+        wait_pending = self._add_pending(key)
 
         # Send.
         self.send(send_type, send_data)
 
         # Wait.
-        is_set_event = event.wait(10)
-        if not is_set_event:
-            throw(WeChatClientErorr, text='after sending hook commmand, wait callback timeout')
-
-        # Result.
-        data: CallbackData = self._pending_callbacks[key]['data']
+        data = wait_pending()
 
         return data
 
@@ -681,22 +720,13 @@ class WeChatClient(WeChatBase):
         }
 
         # Event.
-        event = Event()
         key = f'{send_type}:{cdn_id}'
-        self._pending_callbacks[key] = {
-            'event': event,
-            'data': None
-        }
+        wait_pending = self._add_pending(key)
 
         # Send.
         self.send(send_type, send_data)
 
         # Wait.
-        is_set_event = event.wait(300)
-        if not is_set_event:
-            throw(WeChatClientErorr, text='after sending hook commmand, wait callback timeout')
-
-        # Result.
-        data: CallbackData = self._pending_callbacks[key]['data']
+        data = wait_pending(300)
 
         return data
