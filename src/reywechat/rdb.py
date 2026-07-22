@@ -892,8 +892,8 @@ class WeChatDatabase(WeChatBase):
         Returns
         -------
         Judgment result.
-            - "True": Valid.
-            - "False": Invalid or no record.
+            - `True`: Valid.
+            - `False`: Invalid or no record.
         """
 
         # Judge.
