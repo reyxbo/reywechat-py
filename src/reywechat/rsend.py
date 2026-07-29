@@ -305,7 +305,7 @@ class WeChatSender(WeChatBase):
                 self.__send(send_params)
 
             ## Exception.
-            except BaseException:
+            except BaseException: # noqa: BLE001
 
                 # Catch exception.
                 exc_text, *_ = catch_exc()
@@ -558,7 +558,7 @@ class WeChatSender(WeChatBase):
                     *arg,
                     **kwargs
                 )
-            except BaseException:
+            except BaseException: # noqa: BLE001
                 exc_text, exc, _ = catch_exc()
 
                 # Report.

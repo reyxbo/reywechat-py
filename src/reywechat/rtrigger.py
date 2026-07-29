@@ -89,7 +89,7 @@ class WeChatTrigger(WeChatBase):
                     break
 
                 # Exception.
-                except BaseException:
+                except BaseException: # noqa: BLE001
 
                     ## Catch exception.
                     exc_text, *_ = catch_exc()
