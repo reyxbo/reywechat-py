@@ -452,10 +452,7 @@ class WeChatDatabase(WeChatBase):
             for user_id, name in room_user_dict.items()
         ]
         room_user_ids = [
-            '%s,%s' % (
-                row['room_id'],
-                row['user_id']
-            )
+            f'{row['room_id']},{row['user_id']}'
             for row in room_user_data
         ]
 
@@ -848,7 +845,7 @@ class WeChatDatabase(WeChatBase):
                 if file_id is not None:
                     try:
                         file_path, file_name = self.__download_file(file_id)
-                    except Exception:
+                    except BaseException: # noqa: BLE001
                         exc_text, *_ = catch_exc()
                         print(exc_text)
                         continue

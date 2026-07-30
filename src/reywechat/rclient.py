@@ -8,7 +8,6 @@
 """
 
 from typing import TypedDict, Literal
-from collections.abc import Callable
 from threading import Event
 from queue import Queue
 from reykit.rbase import throw
@@ -243,10 +242,9 @@ class WeChatClient(WeChatBase):
         processes = search_process(name=wechat_process_name)
 
         # Check.
-        if processes == []:
-            return False
-        else:
-            return True
+        result = processes != []
+
+        return result
 
     def send(
         self,

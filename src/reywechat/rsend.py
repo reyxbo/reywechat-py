@@ -287,12 +287,10 @@ class WeChatSender(WeChatBase):
                 case None:
                     break
 
-            send_params = self.queue.get()
-
-            def handle_handler_exception(exc_text: str, *_) -> None:
-                send_params.exc_reports.append(exc_text)
-
             ## Handler.
+            send_params = self.queue.get()
+            def handle_handler_exception(exc_text: str, *_, send_params=send_params) -> None:
+                send_params.exc_reports.append(exc_text)
             for handler in self.handlers:
                 handler = wrap_exc(
                     handler,
@@ -558,7 +556,7 @@ class WeChatSender(WeChatBase):
                     *arg,
                     **kwargs
                 )
-            except BaseException: # noqa: BLE001
+            except BaseException:
                 exc_text, exc, _ = catch_exc()
 
                 # Report.
@@ -567,10 +565,10 @@ class WeChatSender(WeChatBase):
                     (WeChatTriggerContinueExit, WeChatTriggerBreakExit)
                 ):
                     text = exc_text
-                    for receive_id in receive_ids:
+                    for receive_id_ in receive_ids:
                         self.send(
                             WeChatSendTypeEnum.TEXT,
-                            receive_id,
+                            receive_id_,
                             text=text
                         )
 

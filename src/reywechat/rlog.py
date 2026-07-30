@@ -147,15 +147,15 @@ class WeChatLog(WeChatBase):
             message_object = message.user
         else:
             message_object = message.room
-        content_print = 'RECEIVE | %-20s' % message_object
-        content_file = 'RECEIVE | %s' % message.params
+        content_print = f'RECEIVE | {message_object: <20}'
+        content_file = f'RECEIVE | {message.params}'
         if message.exc_reports == []:
             level = self.rrlog.INFO
         else:
             level = self.rrlog.ERROR
             exc_text = '\n'.join(message.exc_reports)
-            content_print = '%s\n%s' % (content_print, exc_text)
-            content_file = '%s\n%s' % (content_file, exc_text)
+            content_print = f'{content_print}\n{exc_text}'
+            content_file = f'{content_file}\n{exc_text}'
 
         ## Add color.
         if self.rrlog.print_colour:
@@ -185,18 +185,20 @@ class WeChatLog(WeChatBase):
         """
 
         # Generate record.
-        content_print = 'SEND    | %-20s' % send_params.receive_id
-        content_file = 'SEND    | %s' % {
-            'receive_id': send_params.receive_id,
-            **send_params.params
-        }
+        content_print = f'SEND    | {send_params.receive_id: <20}'
+        content_file = 'SEND    | {}'.format(
+            {
+                'receive_id': send_params.receive_id,
+                **send_params.params
+            }
+        )
         if send_params.exc_reports == []:
             level = self.rrlog.INFO
         else:
             level = self.rrlog.ERROR
             exc_text = '\n'.join(send_params.exc_reports)
-            content_print = '%s\n%s' % (content_print, exc_text)
-            content_file = '%s\n%s' % (content_file, exc_text)
+            content_print = f'{content_print}\n{exc_text}'
+            content_file = f'{content_file}\n{exc_text}'
 
         ## Add color.
         if self.rrlog.print_colour:

@@ -141,7 +141,7 @@ class WeChatMessage(WeChatBase):
         self._cache: dict[str, Any] = {}
 
         ## Update call next.
-        self.is_call_next
+        _ = self.is_call_next
 
     @property
     def params(self) -> MessageParameters:
@@ -709,7 +709,7 @@ class WeChatMessage(WeChatBase):
         # Judge.
         self._cache['is_quote_me'] = (
             self.is_quote
-            and '<chatusr>%s</chatusr>' % self.receiver.wechat.client.login_info['id'] in self.data
+            and f'<chatusr>{self.receiver.wechat.client.login_info['id']}</chatusr>' in self.data
         )
 
         return self._cache['is_quote_me']
@@ -942,7 +942,7 @@ class WeChatMessage(WeChatBase):
             or self.is_pat_me
 
             ## At self.
-            or '@%s\u2005' % self.receiver.wechat.client.login_info['name'] in self.data
+            or f'@{self.receiver.wechat.client.login_info['name']}\u2005' in self.data
 
             ## Call self.
             or self.data.lstrip().startswith(self.receiver.call_name)
@@ -978,7 +978,7 @@ class WeChatMessage(WeChatBase):
         ## Replace.
 
         ### At.
-        at_me_keyword = '@%s\u2005' % self.receiver.wechat.client.login_info['name']
+        at_me_keyword = f'@{self.receiver.wechat.client.login_info['name']}\u2005'
         text = text.replace(at_me_keyword, '')
 
         ### Call.
@@ -1118,7 +1118,7 @@ class WeChatMessage(WeChatBase):
         users_id: list[str] = findall(pattern, text)
         for user_id in users_id:
             user_name = self.receiver.wechat.client.get_contact_name(user_id)
-            old_text = '${%s}' % user_id
+            old_text = f'${{{user_id}}}'
             text = text.replace(old_text, user_name)
 
         self._cache['pat_text'] = text
