@@ -79,6 +79,30 @@ MessageParametersFileUploading = TypedDict(
         'size': int
     }
 )
+MessageParametersUserInformation = TypedDict(
+    'MessageParametersUserInformation',
+    {
+        'contact_id': str,
+        'account': str,
+        'name': str,
+        'avatar': str,
+        'small_avatar': str,
+        'sex': Literal[0, 1],
+        'signature': str | None,
+        'remark': str | None,
+        'city': str | None,
+        'province': str | None,
+        'country': str | None,
+    }
+)
+MessageParametersRoomInformation = TypedDict(
+    'MessageParametersUserInformation',
+    {
+        'contact_id': str,
+        'name': str | None,
+        'remark': str | None
+    }
+)
 
 class WeChatMessage(WeChatBase):
     """
@@ -88,6 +112,45 @@ class WeChatMessage(WeChatBase):
     SendTypeEnum = WeChatSendTypeEnum
     SendStatusEnum = WeChatSenderStatusEnum
 
+    @overload
+    def __init__(
+            self,
+            receiver: 'WechatReceiver',
+            time: int,
+            id_: int,
+            type_: int,
+            data: str,
+            room: str,
+            user: str,
+            file: MessageParametersFile | None = None
+        ) -> None: ...
+
+    @overload
+    def __init__(
+            self,
+            receiver: 'WechatReceiver',
+            time: int,
+            id_: int,
+            type_: int,
+            data: str,
+            room: str,
+            user: None,
+            file: MessageParametersFile | None = None
+        ) -> None: ...
+
+    @overload
+    def __init__(
+            self,
+            receiver: 'WechatReceiver',
+            time: int,
+            id_: int,
+            type_: int,
+            data: str,
+            room: None,
+            user: str,
+            file: MessageParametersFile | None = None
+        ) -> None: ...
+
     def __init__(
         self,
         receiver: 'WechatReceiver',
@@ -95,9 +158,8 @@ class WeChatMessage(WeChatBase):
         id_: int,
         type_: int,
         data: str,
-        window: str,
-        room: str | None = None,
-        user: str | None = None,
+        room: str | None,
+        user: str | None,
         file: MessageParametersFile | None = None
     ) -> None:
         """
@@ -110,7 +172,6 @@ class WeChatMessage(WeChatBase):
         id : Message ID.
         type : Message type.
         data : Message source data.
-        window : Message sende window ID.
         room : Message chat room ID.
         user : Message chat user ID.
         file : Message file parameters.
@@ -125,9 +186,11 @@ class WeChatMessage(WeChatBase):
         self.id = id_
         self.type = type_
         self.data = data
-        self.window = window
         self.room = room
         self.user = user
+        self.window: str = room or user
+        self.has_room = room is not None
+        self.has_user = user is not None
         self.file: MessageParametersFile | None = file
         self.triggering_rule: TriggerRule | None = None
         self.replied_rule: TriggerRule | None = None
@@ -181,7 +244,89 @@ class WeChatMessage(WeChatBase):
         return params_str
 
     @property
-    def user_name(self) -> str | None:
+    def user_info(self) -> MessageParametersUserInformation:
+        """
+        Message sender user information.
+
+        Returns
+        -------
+        User information.
+        """
+
+        # Break.
+        if not self.has_user:
+            return
+
+        # Cache.
+        if 'user_info' in self._cache:
+            return self._cache['user_info']
+
+        # Set.
+        contact_info = self.receiver.wechat.client.get_contact_info(self.user)
+        self._cache['user_info'] = {
+            'contact_id': contact_info['wxid'],
+            'account': contact_info['account'],
+            'name': contact_info['nickname'],
+            'avatar': contact_info['avatar'],
+            'small_avatar': contact_info['small_avatar'],
+            'sex': contact_info['sex'],
+            'signature': contact_info['signature'] or None,
+            'remark': contact_info['remark'] or None,
+            'city': contact_info['city'] or None,
+            'province': contact_info['province'] or None,
+            'country': contact_info['country'] or None
+        }
+
+        return self._cache['user_info']
+
+    @property
+    def room_info(self) -> MessageParametersRoomInformation:
+        """
+        Message sender chat room information.
+
+        Returns
+        -------
+        Chat room information.
+        """
+
+        # Break.
+        if not self.has_room:
+            return
+
+        # Cache.
+        if 'room_info' in self._cache:
+            return self._cache['room_info']
+
+        # Set.
+        contact_info = self.receiver.wechat.client.get_contact_info(self.room)
+        self._cache['room_info'] = {
+            'contact_id': contact_info['wxid'],
+            'name': contact_info['nickname'] or None,
+            'remark': contact_info['remark'] or None,
+        }
+
+        return self._cache['room_info']
+
+    @property
+    def window_info(self) -> MessageParametersUserInformation | MessageParametersRoomInformation:
+        """
+        Message sender window information.
+
+        Returns
+        -------
+        Window information.
+        """
+
+        # Get.
+        if self.has_room:
+            info = self.room_info
+        else:
+            info = self.user_info
+
+        return info
+
+    @property
+    def user_name(self) -> str:
         """
         Message sender user name.
 
@@ -190,20 +335,10 @@ class WeChatMessage(WeChatBase):
         User name.
         """
 
-        # Break.
-        if self.user is None:
-            return
+        # Get.
+        name = self.user_info['name']
 
-        # Cache.
-        if 'user_name' in self._cache:
-            return self._cache['user_name']
-
-        # Set.
-        self._cache['user_name'] = self.receiver.wechat.client.get_contact_name(
-            self.user
-        )
-
-        return self._cache['user_name']
+        return name
 
     @property
     def room_name(self) -> str | None:
@@ -215,23 +350,13 @@ class WeChatMessage(WeChatBase):
         Chat room name.
         """
 
-        # Break.
-        if self.room is None:
-            return
+        # Get.
+        name = self.room_info['name']
 
-        # Cache.
-        if 'room_name' in self._cache:
-            return self._cache['room_name']
-
-        # Set.
-        self._cache['room_name'] = self.receiver.wechat.client.get_contact_name(
-            self.room
-        )
-
-        return self._cache['room_name']
+        return name
 
     @property
-    def window_name(self) -> str:
+    def window_name(self) -> str | None:
         """
         Message sender window name.
 
@@ -240,17 +365,10 @@ class WeChatMessage(WeChatBase):
         Window name.
         """
 
-        # Cache.
-        if 'window_name' in self._cache:
-            return self._cache['window_name']
+        # Get.
+        name = self.window_info['name']
 
-        # Set.
-        if self.room is None:
-            self._cache['window_name'] = self.user_name
-        else:
-            self._cache['window_name'] = self.room_name
-
-        return self._cache['window_name']
+        return name
 
     @property
     def text(self) -> str:
@@ -1771,7 +1889,6 @@ class WechatReceiver(WeChatBase):
                 params['data']['msgid'],
                 params['data']['wx_type'],
                 params['data'].get('msg') or params['data']['raw_msg'],
-                params['data']['room_wxid'] or params['data']['from_wxid'],
                 params['data']['room_wxid'] or None,
                 params['data']['from_wxid'] or None
             )
