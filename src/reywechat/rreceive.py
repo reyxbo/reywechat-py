@@ -90,9 +90,9 @@ MessageParametersUserInformation = TypedDict(
         'sex': Literal[0, 1],
         'signature': str | None,
         'remark': str | None,
-        'city': str | None,
-        'province': str | None,
         'country': str | None,
+        'province': str | None,
+        'city': str | None
     }
 )
 MessageParametersRoomInformation = TypedDict(
