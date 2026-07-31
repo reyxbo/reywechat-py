@@ -68,7 +68,8 @@ MessageParametersFile = TypedDict(
         'path': str,
         'name': NotRequired[str],
         'md5': NotRequired[str],
-        'size': NotRequired[int]
+        'size': NotRequired[int],
+        'file_id': NotRequired[int]
     }
 )
 MessageParametersFileUploading = TypedDict(

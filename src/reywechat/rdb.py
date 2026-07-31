@@ -699,6 +699,7 @@ class WeChatDatabase(WeChatBase):
                     message.file['name'],
                     'WeChat'
                 )
+                message.file['file_id'] = file_id
 
             # Generate data.
             message_time_obj = to_time(message.time)
@@ -849,6 +850,7 @@ class WeChatDatabase(WeChatBase):
                         exc_text, *_ = catch_exc()
                         print(exc_text)
                         continue
+                    parameter['file_id'] = file_id
                     parameter['file_path'] = file_path
                     parameter['file_name'] = file_name
 
