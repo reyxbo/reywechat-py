@@ -4,7 +4,10 @@
 @Time    : 2023-10-26
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Receive methods.
+@Explain : Message receiving module.
+    Provides WeChat message receiving and message object processing capabilities.
+    It uses a thread pool to asynchronously receive messages in batches and encapsulates received messages into unified WeChat message objects.
+    The WeChat message object provides integrated processing capabilities for various message data and operations.
 """
 
 from typing import Any, TypedDict, NotRequired, Literal, overload
@@ -1601,13 +1604,13 @@ class WeChatMessage(WeChatBase):
                 cdn_id: str = search(' cdnthumburl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
-            save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.jpg'
+            save_path = f'{self.receiver.wechat.file_cache.folder.path}\\{file_md5}.jpg'
         elif self.type == 43:
             media_type = 'video'
             cdn_id: str = search(' cdnvideourl="([0-9a-f]+)"', self.data)
             aes_key: str = search(' aeskey="([0-9a-f]+)"', self.data)
             file_md5: str = search(' md5="([0-9a-f]+)"', self.data)
-            save_path = f'{self.receiver.wechat.cache.folder.path}\\{file_md5}.mp4'
+            save_path = f'{self.receiver.wechat.file_cache.folder.path}\\{file_md5}.mp4'
         else:
             throw(WeChatTriggerError, text='can only be download image or video message')
 
@@ -1620,7 +1623,7 @@ class WeChatMessage(WeChatBase):
         )
 
         # Cache.
-        cache_path = self.receiver.wechat.cache.store(save_path, delete=True)
+        cache_path = self.receiver.wechat.file_cache.store(save_path, delete=True)
 
         return cache_path
 
@@ -1973,7 +1976,7 @@ class WechatReceiver(WeChatBase):
                 return
 
         # Cache.
-        cache_path = self.wechat.cache.store(file_path, file_name, delete=True)
+        cache_path = self.wechat.file_cache.store(file_path, file_name, delete=True)
 
         # Parameter.
         message_file: MessageParametersFile = {

@@ -4,7 +4,8 @@
 @Time    : 2024-07-17
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Base methods.
+@Explain : Base utility module.
+    Provides common methods and shared functionality used by other modules.
 """
 
 from reykit.rbase import Base, Error, Exit

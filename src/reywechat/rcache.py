@@ -4,7 +4,8 @@
 @Time    : 2025-08-13
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Cache methods.
+@Explain : Cache module.
+    Provides data caching capabilities for the WeChat client.
 """
 
 from reykit.ros import FileStore
@@ -13,10 +14,10 @@ from .rbase import WeChatBase
 from .rwechat import WeChat
 
 __all__ = (
-    'WeChatCache',
+    'WeChatFileCache',
 )
 
-class WeChatCache(WeChatBase, FileStore):
+class WeChatFileCache(WeChatBase, FileStore):
     """
     WeChat file cache type.
     """

@@ -4,7 +4,10 @@
 @Time    : 2023-10-17
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Client methods.
+@Explain : WeChat client module.
+    Provides integrated methods for controlling and interacting with the WeChat client.
+    This module implements WeChat client control and interaction through communication
+    with the Hook program and serves as the primary module for interacting with the WeChat client.
 """
 
 from typing import TypedDict, Literal

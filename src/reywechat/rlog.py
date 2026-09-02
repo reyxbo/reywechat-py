@@ -4,7 +4,9 @@
 @Time    : 2023-10-19
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Log methods.
+@Explain : Logging module.
+    Provides logging capabilities for WeChat messages.
+    It is mainly used to record received and sent WeChat messages.
 """
 
 from reykit.rlog import Log

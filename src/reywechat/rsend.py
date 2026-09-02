@@ -4,7 +4,9 @@
 @Time    : 2024-01-03
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Send methods.
+@Explain : Message sending module.
+    Provides the WeChat message sending queue and message sending objects.
+    Messages are managed through a queue and sent using human-like operations to reduce risks associated with continuous and rapid operations.
 """
 
 from typing import Any, Literal, overload

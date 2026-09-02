@@ -4,7 +4,8 @@
 @Time    : 2023-10-17
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : WeChat methods.
+@Explain : Top-level WeChat module.
+    Provides the top-level `WeChat` object of reywechat and serves as the primary entry point for using the framework.
 """
 
 from reydb import Database
@@ -55,18 +56,18 @@ class WeChat(WeChatBase):
         """
 
         # Import.
-        from .rcache import WeChatCache
         from .rclient import WeChatClient
         from .rdb import WeChatDatabase
         from .rlog import WeChatLog
         from .rreceive import WechatReceiver
         from .rsend import WeChatSendTypeEnum, WeChatSenderStatusEnum, WeChatSender
+        from .rcache import WeChatFileCache
 
         # Build.
 
         ## Instance.
         self.client = WeChatClient(self, send_port, receive_port)
-        self.cache = WeChatCache(self, cache_dir)
+        self.file_cache = WeChatFileCache(self, cache_dir)
         self.error = WeChatLog(self, log_dir)
         self.receiver = WechatReceiver(self, self.client.queue, max_receiver, call_name)
         self.trigger = self.receiver.trigger

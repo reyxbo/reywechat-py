@@ -4,7 +4,9 @@
 @Time    : 2023-10-23
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Database methods.
+@Explain : Database module.
+    Provides database record objects for WeChat-related data.
+    It is used to uniformly record and manage WeChat messages, contacts, and other related data in the database.
 """
 
 from enum import StrEnum
@@ -784,12 +786,12 @@ class WeChatDatabase(WeChatBase):
         file_name = file_info['name']
 
         # Cache.
-        cache_path = self.wechat.cache.index(file_md5, file_name, True)
+        cache_path = self.wechat.file_cache.index(file_md5, file_name, True)
 
         ## Download.
         if cache_path is None:
             file_bytes = self.sclient.download_file(file_id)
-            cache_path = self.wechat.cache.store(file_bytes, file_name)
+            cache_path = self.wechat.file_cache.store(file_bytes, file_name)
 
         return cache_path, file_name
 
@@ -970,7 +972,7 @@ class WeChatDatabase(WeChatBase):
                 file_name = file.name_suffix
 
             ## Cache.
-            cache_path = self.wechat.cache.store(file_path, file_name)
+            cache_path = self.wechat.file_cache.store(file_path, file_name)
 
             file_id = self.sclient.upload_file(
                 cache_path,

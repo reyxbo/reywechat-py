@@ -4,7 +4,8 @@
 @Time    : 2024-07-16
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Trigger methods.
+@Explain : Message trigger module.
+    Provides WeChat message receiving trigger objects for invoking corresponding handlers based on received WeChat messages.
 """
 
 from typing import Any, TypedDict, NoReturn

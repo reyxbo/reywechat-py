@@ -1,11 +1,21 @@
 [project]
 name = "reywechat"
-version = "1.1.41"
-description = "WeChat client control method set."
+version = "1.1.42"
+description = "WeChat client control framework based on a WeChat client Hook program."
 readme = "README.md"
 requires-python = ">=3.12"
 license = {file = "LICENSE"}
-keywords = ["rey", "reyxbo", "wechat", "robot", "helper"]
+keywords = [
+    "rey",
+    "reyxbo",
+    "wechat",
+    "robot",
+    "helper",
+    "file",
+    "recevie",
+    "send",
+    "client"
+]
 authors = [
     {name = "Rey", email = "reyxbo@163.com"}
 ]
@@ -16,7 +26,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://www.reyxbo.com"
+Homepage = "https://www.reyxbo.com/release/python/reywechat"
 Repository = "https://github.com/reyxbo/reywechat-py.git"
 
 [build-system]
