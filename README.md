@@ -298,7 +298,7 @@ In addition, reywechat depends on the **reywechat-hook** Hook program at runtime
 | Python     | `>=3.12`                                                   |
 | Author     | `Rey`                                                      |
 | Email      | `reyxbo@163.com`                                           |
-| Homepage   | [reyxbo.com](https://www.reyxbo.com/release/python/reywechat)                       |
+| Homepage   | [REYXBO](https://www.reyxbo.com/release/python/reywechat)  |
 | Repository | [reywechat-py](https://github.com/reyxbo/reywechat-py.git) |
 
 ## Keywords
