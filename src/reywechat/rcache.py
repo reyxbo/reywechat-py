@@ -42,3 +42,5 @@ class WeChatFileCache(WeChatBase, FileStore):
         self.folder = self.file_store.folder
         self.index = self.file_store.index
         self.store = self.file_store.store
+        self.download = self.file_store.download
+        self.delete = self.file_store.delete
