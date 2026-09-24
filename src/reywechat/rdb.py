@@ -56,7 +56,7 @@ class WechatORMTableContactUser(WeChatBase, rorm.Table):
     __name__ = 'contact_user'
     __comment__ = 'User contact table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', index_n=True, comment='Record update time.')
     user_id: str = rorm.Field(rorm.types.VARCHAR(24), key=True, comment='User ID.')
     name: str | None = rorm.Field(rorm.types.TEXT, comment='User name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
@@ -70,7 +70,7 @@ class WechatORMTableContactRoom(WeChatBase, rorm.Table):
     __name__ = 'contact_room'
     __comment__ = 'Chat room contact table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', index_n=True, comment='Record update time.')
     room_id: str = rorm.Field(rorm.types.VARCHAR(31), key=True, comment='Chat room ID.')
     name: str | None = rorm.Field(rorm.types.TEXT, comment='Chat room name.')
     is_contact: bool = rorm.Field(field_default='TRUE', not_null=True, comment='Is the contact.')
@@ -84,7 +84,7 @@ class WechatORMTableContactRoomUser(WeChatBase, rorm.Table):
     __name__ = 'contact_room_user'
     __comment__ = 'Chat room user contact table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', index_n=True, comment='Record update time.')
     room_id: str = rorm.Field(rorm.types.VARCHAR(31), key=True, comment='Chat room ID.')
     user_id: str = rorm.Field(rorm.types.VARCHAR(24), key=True, comment='Chat room user ID.')
     name: str | None = rorm.Field(rorm.types.TEXT, comment='Chat room user name.')
@@ -155,7 +155,7 @@ class WeChatORMTableMessageSend(WeChatBase, rorm.Table):
     __name__ = 'message_send'
     __comment__ = 'Message send table.'
     create_time: rorm.Datetime = rorm.Field(field_default=':time', not_null=True, index_n=True, comment='Record create time.')
-    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', arg_default=now, index_n=True, comment='Record update time.')
+    update_time: rorm.Datetime | None = rorm.Field(field_default=':time', index_n=True, comment='Record update time.')
     send_id: int = rorm.Field(key_auto=True, comment='Send ID.')
     message_id: int | None = rorm.Field(rorm.types.BIGINT, comment='Message UUID.')
     status: str = rorm.Field(rorm.ENUM(WeChatDatabaseSendStatusEnum), field_default=WeChatDatabaseSendStatusEnum.WAIT, not_null=True, comment='Send status.')
@@ -426,10 +426,16 @@ class WeChatDatabase(WeChatBase):
             }
         ]
 
-        # Build.
+        # Update time trigger.
+        update_time_triggers=[
+            (WechatORMTableContactUser.__tablename__, 'update_time'),
+            (WechatORMTableContactRoom.__tablename__, 'update_time'),
+            (WechatORMTableContactRoomUser.__tablename__, 'update_time'),
+            (WeChatORMTableMessageSend.__tablename__, 'update_time')
+        ]
 
-        ## WeChat.
-        self.db.wechat.build(tables=tables, views_stats=views_stats, skip=True)
+        # Build.
+        self.db.wechat.build(tables=tables, views_stats=views_stats, update_time_triggers=update_time_triggers, skip=True)
 
     def update_contact_room_user(
         self,
