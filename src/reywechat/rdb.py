@@ -13,7 +13,7 @@ from enum import StrEnum
 from reydb import rorm, Database
 from reykit.rbase import throw, catch_exc
 from reykit.ros import File
-from reykit.rtime import now, to_time, time_to, sleep
+from reykit.rtime import to_time, time_to, sleep
 from reykit.rwrap import wrap_thread
 from reyserver.rclient import ServerClient
 
